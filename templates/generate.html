@@ -1,0 +1,106 @@
+{% include 'header.html' %}
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Generate Token Kelas</h1>
+                </div><!-- /.col -->
+            </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <!-- general form elements -->
+            <div class="card card-primary">
+                <div class="card-header">
+                    <h3 class="card-title">Buat Token Kelas Anda</h3>
+                </div>
+                <!-- /.card-header -->
+                <!-- form start -->
+                <form role="form" id="formGenerate" action="/generatetoken" method="POST">
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="emailAddress">Alamat Email</label>
+                            <input type="email" class="form-control" id="emailAddress" name="email"
+                                placeholder="Masukan alamat email">
+                        </div>
+                        <div class="form-group">
+                            <label for="fullName">Nama lengkap</label>
+                            <input type="text" class="form-control" id="fullName" name="nama"
+                                placeholder="Masukan nama lengkap">
+                        </div>
+                        <div class="form-group">
+                            <label for="username">Inisial Nama</label>
+                            <input type="text" class="form-control" id="username" name="inisial"
+                                placeholder="Masukan kode nama">
+                        </div>
+                        <div class="form-group">
+                            <label for="nip">NIP</label>
+                            <input type="text" class="form-control" id="nip" name="nip" placeholder="Masukan NIP">
+                        </div>
+                        <div class="form-group">
+                            <label for="matkul">Nama Mata Kuliah</label>
+                            <input type="text" class="form-control" id="matkul" name="matkul"
+                                placeholder="Masukan mata kuliah">
+                        </div>
+                        <div class="form-group">
+                            <label for="pertemuan">Pertemuan Ke-</label>
+                            <input type="number" class="form-control" id="pertemuan" name="pertemuan"
+                                placeholder="Masukan pertemuan ke-">
+                        </div>
+                        <div class="form-group">
+                            <label for="tanggal">Tanggal</label>
+                            <input type="date" class="form-control" id="tanggal" name="tanggal"
+                                placeholder="Masukan tanggal">
+                        </div>
+                        <div class="form-group">
+                            <label for="waktu">Waktu</label>
+                            <input type="time" class="form-control" id="waktu" name="waktu" placeholder="Masukan waktu">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="deskripsi">Deskripsi Kelas</label>
+                            <input type="text" class="form-control" id="deskripsi" name="deskripsi"
+                                placeholder="Masukan deskripsi kelas">
+                        </div>
+                        <br>
+                        <!-- /input-group -->
+                        <div class="form-group">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <button type="button" onclick="generateRandomNumber()"
+                                        class="btn btn-warning">Generate
+                                        Token</button>
+                                </div>
+                                <!-- /btn-group -->
+                                <input type="number" class="form-control" id="randomNumberDisplay" name="token"
+                                    placeholder="Klik generate token" readonly>
+                            </div>
+                        </div>
+                        <!-- /input-group -->
+                    </div>
+                    <!-- /.card-body -->
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-success">Aktifkan Token!</button>
+                    </div>
+
+                    <!-- Overlay -->
+                    <div class="overlay" id="overlay" style="display: none;">
+                        <div class="spinner-border text-light" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+</div>
+<!-- script saya -->
+<script src="{{ url_for('static', filename='js/generate.js') }}"></script>
+
+{% include 'footer.html' %}
