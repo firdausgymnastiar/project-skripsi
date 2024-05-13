@@ -69,15 +69,9 @@ def test(img):
     value = prediction[0][label]/2
     return label
 
-def process_image(file):
-    img_np = np.fromstring(file.read(), np.uint8)
-    img_cv = cv2.imdecode(img_np, cv2.IMREAD_COLOR)
-    return img_cv
-
 def face_processing(img_cv):
     
     image = cv2.imdecode(img_cv, cv2.IMREAD_COLOR)
-    # image = process_image(img_cv)
     model_path = "models/res10_300x300_ssd_iter_140000.caffemodel"
     prototxt_path = "models/deploy.prototxt.txt"
 
@@ -219,7 +213,82 @@ def registerwajah():
    
 @app.route('/login')
 def login():
-    return render_template('login.html',menu='login')
+     # Mendeteksi apakah perangkat adalah perangkat mobile
+    user_agent = request.headers.get('User-Agent').lower()
+    is_mobile = any(mobile in user_agent for mobile in ['iphone', 'android', 'blackberry', 'opera mini', 'windows mobile'])
+    if is_mobile:
+        return render_template('login.html',menu='login')
+    else:
+        return render_template('mobile-only.html')
+@app.route("/loginkelas", methods=["POST", "GET"])
+def loginkelas():
+    try:
+        if 'gambarWajah' not in request.files:
+            return jsonify({'success': False, 'message': 'No file part'})
+        
+        token = request.form.get('tokenKelas')
+        file = request.files['gambarWajah']
+
+        img_np = np.fromstring(file.read(), np.uint8)
+        # img_cv = cv2.imdecode(img_np, cv2.IMREAD_COLOR)
+        face_verify = face_processing(img_np)
+        
+
+        if face_verify == "you are not registered yet":
+            response = {'success': False, 'message': 'you are not registered yet'}
+            return jsonify(response), 400        
+        if face_verify == "More than 1 face detected":
+            response = {'success': False, 'message': 'More than 1 face detected'}
+            return jsonify(response), 400
+        if face_verify == "there is no one face detected":
+            response = {'success': False, 'message': 'there is no one face detected'}
+            return jsonify(response), 400
+        if face_verify == "picture is not clear":
+            response = {'success': False, 'message': 'picture is not clear'}
+            return jsonify(response), 400
+        if face_verify == "fake":
+            response = {'success': False, 'message': 'fake'}
+            return jsonify(response), 400
+
+        if file.filename == '':
+            return jsonify({'success': False, 'message': 'No selected file'})
+        
+        if token and file and allowed_file(file.filename) and face_verify:  # Memastikan semua data diterima
+            img_login = face_verify.split('\\')[1]
+
+            try:
+                cur = mysql.connection.cursor()
+                query = "SELECT name From students_registered WHERE file LIKE %s"
+                cur.execute(query, (img_login,))
+                # Mengambil hasil query
+                data = cur.fetchall() #type data tuple
+                cur.close()
+                if data is not None:
+                    namalengkap = str(data[0])
+                    panggilan = namalengkap.split("'")[1]
+                    filename = secure_filename(str(panggilan) + "_login_" + str(token)) + ".jpg"  # Ganti ekstensi sesuai kebutuhan
+
+                    uploads_folder = os.path.join(os.getcwd(), 'static', 'upload/img_login')
+
+                    file_path = os.path.join(uploads_folder, filename)  # Path penyimpanan file
+                    with open(file_path, 'wb') as f:  # Mode 'wb' untuk menyimpan dalam mode biner
+                        f.write(img_np)  # Menulis konten byte ke file
+
+                    response = {'success': True, 'message': 'successfull', 'name': panggilan}
+                    return jsonify(response)
+                else:
+                    response = {'success': False, 'message': 'gada didaftar db!'}
+                    return jsonify(response)
+            except Exception as e:
+                response = {'success': False, 'message': str(e)}
+                return jsonify(response), 500
+        else:
+            response = {'success': False, 'message': 'Missing required data'}
+            return jsonify(response), 400  # Mengembalikan kode status 400 (Bad Request) jika data yang diperlukan tidak ditemukan
+    except:
+        response = {'success': False, 'message': 'form kosong'}
+        return jsonify(response), 400   
+    
 @app.route('/table')
 def table():
     return render_template('table.html',menu='table')
