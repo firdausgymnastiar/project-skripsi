@@ -73,11 +73,6 @@ function displayAlert(responseData) {
       alertIcon = "error"
       alertText = "Wajah anda tidak terdeteksi, mohon ulangi!"
       break
-    case "picture is not clear":
-      alertTitle = "Gambar Kurang Jelas!"
-      alertIcon = "error"
-      alertText = "Mohon ulangi dengan gambar yang lebih jelas!!"
-      break
     case "No selected file":
       alertTitle = "Gambar Tidak Dipilih!"
       alertIcon = "error"

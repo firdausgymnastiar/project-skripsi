@@ -70,51 +70,32 @@ def test(img):
     return label
 
 def face_processing(img_cv):
-    
-    image = cv2.imdecode(img_cv, cv2.IMREAD_COLOR)
-    model_path = "models/res10_300x300_ssd_iter_140000.caffemodel"
-    prototxt_path = "models/deploy.prototxt.txt"
+    try:
+        image = cv2.imdecode(img_cv, cv2.IMREAD_COLOR)
+        folder_img = "static/upload/img_register"
 
-    net = cv2.dnn.readNetFromCaffe(prototxt_path, model_path)
-
-    
-    blob = cv2.dnn.blobFromImage(cv2.resize(image, (300, 300)), 1.0, (300, 300), (104.0, 177.0, 123.0))
-
-    net.setInput(blob)
-    detections = net.forward()
-
-    face_count = 0
-    confidence_above_099 = 0
-
-    for i in range(0, detections.shape[2]):
-        confidence = detections[0, 0, i, 2]
-
-        if confidence > 0.8:
-            face_count += 1
-            if confidence > 0.99:
-                confidence_above_099 += 1
-
-    if face_count > 1:
-        return "More than 1 face detected"
-    elif face_count == 1:
-        anti_fake = test(image)
-        if anti_fake == 1:
-            try:
-                folder_img = "static/upload/img_register"
-                dfs = DeepFace.find(img_path=image, db_path=folder_img)
-                df_at_index_0 = dfs[0]
-                min_distance = df_at_index_0['distance'].min()
-                row_with_min_distance = df_at_index_0.loc[df_at_index_0['distance'] == min_distance]
-                identity_of_min_distance = row_with_min_distance['identity'].values[0]
-                return identity_of_min_distance
-            except:
-                if confidence_above_099 == 1:
+        img = DeepFace.extract_faces(img_path=image)
+        if len(img) > 1:
+            return "More than 1 face detected"
+        elif len(img) == 1:
+            anti_fake = test(image)
+            if anti_fake == 1:
+                try:
+                    dfs = DeepFace.find(img_path=image, db_path=folder_img)
+                    # Mengakses DataFrame pada indeks 0 dari list_of_dfs
+                    df_at_index_0 = dfs[0]
+                    # Temukan nilai minimum dari kolom 'distance' dalam DataFrame pada indeks 0
+                    min_distance = df_at_index_0['distance'].min()
+                    # Temukan baris dengan nilai minimum dalam kolom 'distance'
+                    row_with_min_distance = df_at_index_0.loc[df_at_index_0['distance'] == min_distance]
+                    # Ambil nilai dari kolom 'identity' pada baris tersebut
+                    identity_of_min_distance = row_with_min_distance['identity'].values[0]
+                    return identity_of_min_distance
+                except:
                     return "you are not registered yet"
-                else:
-                    return "picture is not clear" 
-        else:
-            return "fake"
-    elif face_count == 0:
+            else:
+                return "fake"
+    except ValueError:
         return "there is no one face detected"
 
 def allowed_file(filename):
@@ -156,9 +137,6 @@ def registerwajah():
             return jsonify(response), 400
         if face_verify == "there is no one face detected":
             response = {'success': False, 'message': 'there is no one face detected'}
-            return jsonify(response), 400
-        if face_verify == "picture is not clear":
-            response = {'success': False, 'message': 'picture is not clear'}
             return jsonify(response), 400
         if face_verify == "fake":
             response = {'success': False, 'message': 'fake'}
@@ -242,9 +220,6 @@ def loginkelas():
             return jsonify(response), 400
         if face_verify == "there is no one face detected":
             response = {'success': False, 'message': 'there is no one face detected'}
-            return jsonify(response), 400
-        if face_verify == "picture is not clear":
-            response = {'success': False, 'message': 'picture is not clear'}
             return jsonify(response), 400
         if face_verify == "fake":
             response = {'success': False, 'message': 'fake'}

@@ -87,11 +87,6 @@ function displayAlert(responseData) {
       alertIcon = "error"
       alertText = "Wajah anda tidak terdeteksi, mohon ulangi!"
       break
-    case "picture is not clear":
-      alertTitle = "Gambar Kurang Jelas!"
-      alertIcon = "error"
-      alertText = "Mohon ulangi dengan gambar yang lebih jelas!!"
-      break
     case "More than 1 face detected":
       alertTitle = "Terdeteksi Lebih Dari 1 Wajah!"
       alertIcon = "error"
