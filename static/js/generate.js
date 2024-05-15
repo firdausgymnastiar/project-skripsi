@@ -56,7 +56,7 @@ function displayAlert(responseData) {
     case "successfull":
       alertTitle = "Token Berhasil Diaktifkan!"
       alertIcon = "success"
-      alertText = `Token Anda Adalah: ${token}`
+      alertText = `Token Anda Adalah: <strong id="token">${token}</strong> <button id="copy-btn" type="button" class="btn btn-success btn-sm">Copy</button>`
       break
     case "token is existing":
       alertTitle = "Token Sudah Ada!"
@@ -94,8 +94,42 @@ function displayAlert(responseData) {
   Swal.fire({
     icon: alertIcon,
     title: alertTitle,
-    text: alertText,
+    html: alertText,
     allowOutsideClick: false,
+    showConfirmButton: true,
+    didRender: () => {
+      // Tambahkan event listener untuk tombol salin setelah SweetAlert dirender
+      const copyButton = document.getElementById("copy-btn")
+      if (copyButton) {
+        copyButton.addEventListener("click", () => {
+          const tokenElement = document.getElementById("token")
+          if (tokenElement) {
+            const textToCopy = tokenElement.innerText
+            const textarea = document.createElement("textarea")
+            textarea.value = textToCopy
+            document.body.appendChild(textarea)
+            textarea.select()
+            document.execCommand("copy")
+            document.body.removeChild(textarea)
+
+            // Menampilkan notifikasi bahwa teks telah disalin
+            Swal.fire({
+              icon: "success",
+              title: "Copied!",
+              text: "Token telah disalin ke clipboard.",
+              allowOutsideClick: false,
+              // timer: 1500,
+              showConfirmButton: true,
+            }).then((result) => {
+              // Setelah mengklik tombol "OK"
+              if (result.isConfirmed) {
+                window.location.href = "/generate"
+              }
+            })
+          }
+        })
+      }
+    },
   }).then((result) => {
     // Setelah mengklik tombol "OK"
     if (result.isConfirmed) {
