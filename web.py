@@ -7,9 +7,6 @@ import numpy as np
 from ai import face_processing
 
 
-
-app = Flask(__name__)
-
 app = Flask(__name__)
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
@@ -209,17 +206,33 @@ def generatetoken():
         waktu = request.form.get('waktu')
         deskripsi = request.form.get('deskripsi')
         token = request.form.get('token')
+        # token = 549567
         
         if email and nama and inisial and nip and matkul and pertemuan and tanggal and waktu and deskripsi and token:
             try:
                 cur = mysql.connection.cursor()
-                cur.execute("INSERT INTO data_token(email,name,initial,nip,subject,meeting,date,time,description,token) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (email,nama,inisial,nip,matkul,pertemuan,tanggal,waktu,deskripsi,token))
-                mysql.connection.commit()
+                query = "SELECT token From data_token WHERE token LIKE %s"
+                cur.execute(query, (token,))
+                # Mengambil hasil query
+                data = cur.fetchall() #type data tuple
                 cur.close()
-                response = {'success': True, 'message': 'successfull', 'token': token}
-                return jsonify(response)
-            except:
-                response = {'success': False, 'message': 'gagal pas di mysql'}
+                if data and data[0][0] == token:
+                    response = {'success': False, 'message': 'token is existing'}
+                    return jsonify(response), 400
+                else:
+                    try:
+                        cur = mysql.connection.cursor()
+                        cur.execute("INSERT INTO data_token(email,name,initial,nip,subject,meeting,date,time,description,token) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (email,nama,inisial,nip,matkul,pertemuan,tanggal,waktu,deskripsi,token))
+                        mysql.connection.commit()
+                        cur.close()
+                        response = {'success': True, 'message': 'successfull', 'token': token}
+                        return jsonify(response)
+                    except:
+                        response = {'success': False, 'message': 'gagal pas di mysql'}
+                        return jsonify(response), 500  # Mengembalikan kode status 500 (Internal Server Error) jika terjadi kesalahan
+            except Exception as e:
+                print(f"Error during fetching token from database: {e}")
+                response = {'success': False, 'message': 'gagal pas di mysql token'}
                 return jsonify(response), 500  # Mengembalikan kode status 500 (Internal Server Error) jika terjadi kesalahan
         else:
             response = {'success': False, 'message': 'Missing required data'}

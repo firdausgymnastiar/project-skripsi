@@ -58,6 +58,16 @@ function displayAlert(responseData) {
       alertIcon = "success"
       alertText = `Token Anda Adalah: ${token}`
       break
+    case "token is existing":
+      alertTitle = "Token Sudah Ada!"
+      alertIcon = "error"
+      alertText = "Maaf token sudah ada, mohon generate ulang!"
+      break
+    case "gagal pas di mysql token":
+      alertTitle = "Error!"
+      alertIcon = "error"
+      alertText = "gagal pas di mysql token"
+      break
     case "gagal pas di mysql":
       alertTitle = "Error!"
       alertIcon = "error"
