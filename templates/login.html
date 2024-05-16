@@ -28,48 +28,60 @@
                             <label for="tokenKelas">Token Kelas</label>
                             <input type="text" class="form-control" id="tokenKelas" name="tokenKelas"
                                 placeholder="Masukan Token Kelas">
+                            <button type="button" class="btn btn-primary btn-sm mt-2" id="validateTokenBtn">Validate
+                                Token</button>
                         </div>
                         <div class="form-group">
                             <label for="gambarWajah">Gambar Wajah</label>
                             <br>
                             <button id="cameraButton" type="button"
-                                class="btn btn-primary btn-sm d-grid gap-2 d-md-block">
+                                class="btn btn-primary btn-sm d-grid gap-2 d-md-block" disabled>
                                 Buka Camera
                             </button>
                             <br>
                             <input type="file" class="form-control" accept="image/*" capture="camera" id="gambarWajah"
                                 name="gambarWajah" placeholder="Masukan gambar Wajah Anda" style="display: none;">
-                            <img id="preview" style="max-width: 300px; max-height: 300px;" style="display: none;">
+                            <img id="preview" style="max-width: 300px; max-height: 300px; display: none;">
                             <br>
                             <button id="ulangiCamera" style="display: none;" type="button"
-                                class="btn btn-primary btn-sm d-grid gap-2 d-md-block">Ulangi</button>
+                                class="btn btn-primary btn-sm d-grid gap-2 d-md-block" disabled>Ulangi</button>
+                            <button type="button" class="btn btn-primary btn-sm mt-2" id="validateWajahBtn"
+                                style="display: none;" disabled>Validate Gambar Wajah</button>
                         </div>
-
+                        <div class="form-group">
+                            <label for="gambarKelas">Gambar Kelas</label>
+                            <br>
+                            <button id="cameraButton2" type="button"
+                                class="btn btn-primary btn-sm d-grid gap-2 d-md-block" disabled>
+                                Buka Camera
+                            </button>
+                            <br>
+                            <input type="file" class="form-control" accept="image/*" capture="camera" id="gambarKelas"
+                                name="gambarKelas" placeholder="Masukan gambar Kelas Anda" style="display: none;">
+                            <img id="preview2" style="max-width: 300px; max-height: 300px; display: none;">
+                            <br>
+                            <button id="ulangiCamera2" style="display: none;" type="button"
+                                class="btn btn-primary btn-sm d-grid gap-2 d-md-block" disabled>Ulangi</button>
+                            <button type="button" class="btn btn-primary btn-sm mt-2" id="validateKelasBtn"
+                                style="display: none;" disabled>Validate Gambar Kelas</button>
+                        </div>
                     </div>
-
                     <div class="card-footer">
-                        <button type="submit" class="btn btn-success" id="submitButton">
+                        <button type="submit" class="btn btn-success" id="submitButton" disabled>
                             <span id="submitText">Submit</span>
                         </button>
                     </div>
-
                     <!-- Overlay -->
                     <div class="overlay" id="overlay" style="display: none;">
                         <div class="spinner-border text-light" role="status">
                             <span class="sr-only">Loading...</span>
                         </div>
                     </div>
-
                 </form>
-
             </div>
-
-
         </div><!-- /.container-fluid -->
     </section>
     <!-- /.content -->
 </div>
-
 <script src="{{ url_for('static', filename='js/login.js') }}"></script>
-
 {% include 'footer.html' %}
