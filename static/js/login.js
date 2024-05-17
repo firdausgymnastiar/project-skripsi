@@ -28,10 +28,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
   async function validateToken() {
     const token = tokenInput.value
-    if (!token) {
-      alert("Token is required")
-      return
-    }
+    // if (!token) {
+    //   alert("Token is required")
+    //   return
+    // }
 
     const response = await fetch("/validate_token", {
       method: "POST",
@@ -41,9 +41,9 @@ document.addEventListener("DOMContentLoaded", function () {
       body: JSON.stringify({ tokenKelas: token }),
     })
 
-    const data = await response.json()
-    if (response.ok && data.status === "valid") {
-      alert("Token is valid")
+    const responseDataToken = await response.json()
+    if (response.ok && responseDataToken.status === "valid") {
+      alertToken(responseDataToken)
       isTokenValidated = true
       tokenInput.disabled = true
       validateTokenBtn.disabled = true
@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", function () {
       ulangiCamera2.disabled = false
       validateKelasBtn.disabled = false
     } else {
-      alert("Invalid token")
+      alertToken(responseDataToken)
       isTokenValidated = false
       cameraButton.disabled = true
       ulangiCamera.disabled = true
@@ -64,6 +64,41 @@ document.addEventListener("DOMContentLoaded", function () {
       validateKelasBtn.disabled = true
     }
     checkFormValidity()
+  }
+  function alertToken(responseDataToken) {
+    let message = responseDataToken.message
+    let token = responseDataToken.token
+
+    let alertTitle, alertIcon, alertText
+
+    switch (message) {
+      case "token valid":
+        alertTitle = "Token Anda Valid"
+        alertIcon = "success"
+        alertText = `Token ${token} Valid, Mohon lanjutkan validasi gambar!`
+        break
+      case "token tidak valid":
+        alertTitle = "Token Anda Tidak Valid"
+        alertIcon = "error"
+        alertText = `Token ${tokenInput.value} Tidak Valid, Mohon Ulangi!`
+        break
+      case "token kosong":
+        alertTitle = "Tidak Ada Token Yang Di Input"
+        alertIcon = "error"
+        alertText = "Masukan Token Anda"
+        break
+      default:
+        alertTitle = "Error!"
+        alertIcon = "error"
+        alertText = "Terjadi kesalahan saat menyimpan data"
+        break
+    }
+    Swal.fire({
+      icon: alertIcon,
+      title: alertTitle,
+      text: alertText,
+      allowOutsideClick: false,
+    })
   }
 
   async function validateWajah() {

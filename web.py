@@ -194,13 +194,35 @@ def login():
 @app.route("/validate_token", methods=["POST"])
 def validate_token():
     token = request.json.get("tokenKelas")
-    # Lakukan validasi token di sini
-    if token == "123":
-        session['token'] = token  # Simpan token dalam sesi
-        response = {"status": "valid", "token": token}
-        return jsonify(response), 200
+    if token:
+        try:
+            cur = mysql.connection.cursor()
+            query = "SELECT token From data_token WHERE token LIKE %s"
+            cur.execute(query, (token,))
+            # Mengambil hasil query
+            data = cur.fetchall() #type data tuple
+            cur.close()
+            if data and data[0][0] == int(token):
+                session['token'] = token  # Simpan token dalam sesi
+                response = {"status": "valid", "token": token, "success": True, "message": "token valid"}
+                return jsonify(response), 200
+            else:
+                response = {"status": "invalid", "success": False, "message": "token tidak valid"}
+                return jsonify(response)
+        except Exception as e:
+            response = {'success': False, 'message': str(e)}
+            return jsonify(response), 500
     else:
-        return jsonify({"status": "invalid", "message": "Invalid token"}), 400
+        response = {'success': False, 'message': 'token kosong'}
+        return jsonify(response), 500
+        
+    # Lakukan validasi token di sini
+    # if token == "123":
+    #     session['token'] = token  # Simpan token dalam sesi
+    #     response = {"status": "valid", "token": token}
+    #     return jsonify(response), 200
+    # else:
+    #     return jsonify({"status": "invalid", "message": "Invalid token"}), 400
 
 # Fungsi untuk validasi gambar wajah
 @app.route("/validate_image_wajah", methods=["POST"])
