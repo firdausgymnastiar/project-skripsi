@@ -22,11 +22,11 @@
                 </div>
                 <!-- /.card-header -->
                 <!-- form start -->
-                <form role="form" id="formLogin" action="/loginkelas" method="POST">
+                <form role="form" id="formLogin" enctype="multipart/form-data" action="/loginkelas" method="POST">
                     <div class="card-body">
                         <div class="form-group">
                             <label for="tokenKelas">Token Kelas</label>
-                            <input type="text" class="form-control" id="tokenKelas" name="tokenKelas"
+                            <input type="text" class="form-control" id="tokenKelas" name="token"
                                 placeholder="Masukan Token Kelas">
                             <button type="button" class="btn btn-success btn-sm mt-2" id="validateTokenBtn">Validate
                                 Token</button>
@@ -40,7 +40,7 @@
                             </button>
                             <br>
                             <input type="file" class="form-control" accept="image/*" capture="camera" id="gambarWajah"
-                                name="gambarWajah" placeholder="Masukan gambar Wajah Anda" style="display: none;">
+                                name="gambarWajah" placeholder="Masukan gambar Wajah Anda" style="display: block;">
                             <img id="preview" style="max-width: 300px; max-height: 300px; display: none;">
                             <br>
                             <button id="ulangiCamera" style="display: none;" type="button"
@@ -57,7 +57,7 @@
                             </button>
                             <br>
                             <input type="file" class="form-control" accept="image/*" capture="camera" id="gambarKelas"
-                                name="gambarKelas" placeholder="Masukan gambar Kelas Anda" style="display: none;">
+                                name="gambarKelas" placeholder="Masukan gambar Kelas Anda" style="display: block;">
                             <img id="preview2" style="max-width: 300px; max-height: 300px; display: none;">
                             <br>
                             <button id="ulangiCamera2" style="display: none;" type="button"

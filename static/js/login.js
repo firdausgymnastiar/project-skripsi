@@ -46,7 +46,7 @@ async function validateToken() {
   const responseDataToken = await response.json()
   if (response.ok && responseDataToken.status === "valid") {
     alertToken(responseDataToken)
-    validatedWajahFile = token // Simpan file gambar wajah yang valid
+    validatedToken = token // Simpan file gambar wajah yang valid
     isTokenValidated = true
     tokenInput.disabled = true
     validateTokenBtn.disabled = true
@@ -103,7 +103,7 @@ function alertToken(responseDataToken) {
     allowOutsideClick: false,
   }).then((result) => {
     if (result.isConfirmed) {
-      tokenInput.value = ""
+      // tokenInput.value = ""
       // Tampilkan overlay saat memulai submit form
       overlay.style.display = "none"
     }
@@ -307,6 +307,7 @@ function alertKelas(responseDataKelas) {
 validateTokenBtn.addEventListener("click", validateToken)
 validateWajahBtn.addEventListener("click", validateWajah)
 validateKelasBtn.addEventListener("click", validateKelas)
+formLogin.addEventListener("submit", simpanData)
 
 cameraButton.addEventListener("click", function () {
   gambarWajah.click()
@@ -338,10 +339,6 @@ ulangiCamera2.addEventListener("click", function () {
   gambarKelas.click()
 })
 
-formLogin.addEventListener("submit", function () {
-  gambarKelas.click()
-})
-
 gambarKelas.addEventListener("change", function () {
   if (gambarKelas.files && gambarKelas.files[0]) {
     cameraButton2.style.display = "none"
@@ -356,17 +353,33 @@ gambarKelas.addEventListener("change", function () {
   }
 })
 
-async function simpanData() {
-  token = validatedToken.value
+async function simpanData(event) {
+  event.preventDefault() // Prevent the default form submission behavior
+
+  console.log("Token:", validatedToken)
+  console.log("Wajah:", validatedWajahFile)
+  console.log("Kelas:", validatedKelasFile)
+
+  token = validatedToken
   wajah = validatedWajahFile
   kelas = validatedKelasFile
 
   overlay.style.display = "flex"
+  if (!token || !wajah || !kelas) {
+    displayAlert("Token, wajah, dan kelas harus diisi.")
+    return
+  }
+
+  // const token = tokenInput.value
+  // const inputWajah = gambarWajah
+  // const fileWajah = inputWajah.files[0]
+  // const inputKelas = gambarKelas
+  // const fileKelas = inputKelas.files[0]
 
   const formData = new FormData(formLogin)
   formData.append("token", token)
-  formData.append("wajah", wajah)
-  formData.append("kelas", kelas)
+  formData.append("gambarWajah", wajah)
+  formData.append("gambarKelas", kelas)
   const response = await fetch("/loginkelas", {
     method: "POST",
     body: formData,

@@ -305,9 +305,21 @@ def validate_image_kelas():
 @app.route("/loginkelas", methods=["POST", "GET"])
 def login_kelas():
     token = request.form.get('token')
-    wajah = request.files['wajah']
-    kelas = request.files['kelas']
+    wajah = request.files['gambarWajah']
+    kelas = request.files['gambarKelas']
     nim_login = session.get('nim_login')
+    # print(request.form)  # Debug: Cetak form data
+    # print(request.files)  # Debug: Cetak files data
+
+    # if 'token' not in request.form:
+    #     return jsonify({'success': False, 'message': 'Missing token'}), 400
+
+    # if 'wajah' not in request.files:
+    #     return jsonify({'success': False, 'message': 'Missing wajah file'}), 400
+
+    # if 'kelas' not in request.files:
+    #     return jsonify({'success': False, 'message': 'Missing kelas file'}), 400
+
 
     if wajah and allowed_file(wajah.filename) and kelas and allowed_file(kelas.filename):
         try:
