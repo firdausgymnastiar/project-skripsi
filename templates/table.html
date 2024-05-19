@@ -24,16 +24,17 @@
                     <div class="card card-info">
                         <div class="card-body">
                             <div class="input-group input-group-sm">
-                                <input type="text" class="form-control" placeholder="Masukan Token Kelas Anda">
+                                <input type="text" class="form-control" placeholder="Masukan Token Kelas Anda"
+                                    id="token">
                                 <span class="input-group-append">
-                                    <button type="button" class="btn btn-info btn-flat">Go!</button>
+                                    <button type="button" class="btn btn-info btn-flat" id="goBtn">Go!</button>
                                 </span>
                             </div>
                             <!-- /input-group -->
                         </div>
                         <!-- /.card-body -->
                     </div>
-                    <div style="display: block;">
+                    <div style="display: none;" id="detail">
                         <div class="card">
                             <div class="card-header">
                                 <h3 class="card-title">
@@ -132,8 +133,8 @@
                     </div>
                     <!-- Overlay -->
                     <div class="overlay" id="overlay" style="display: none;">
-                        <div class="spinner-border text-light" role="status">
-                            <span class="sr-only">Loading...</span>
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden"></span>
                         </div>
                     </div>
 
@@ -145,5 +146,5 @@
     </section>
     <!-- /.content -->
 </div>
-
+<script src="{{ url_for('static', filename='js/table.js') }}"></script>
 {% include 'footer.html' %}

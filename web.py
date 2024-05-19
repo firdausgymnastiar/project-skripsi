@@ -371,11 +371,36 @@ def login_kelas():
     # else:
     #     return jsonify({"success": False, "message": "Incomplete form data"}), 400
 
-
-
 @app.route('/table')
 def table():
     return render_template('table.html',menu='table')
+
+@app.route('/generatetable', methods=["POST", "GET"])
+def generatetable():
+    token = request.json.get("tokenKelas")
+    if token:
+        try:
+            cur = mysql.connection.cursor()
+            query = "SELECT token From data_token WHERE token LIKE %s"
+            cur.execute(query, (token,))
+            # Mengambil hasil query
+            data = cur.fetchall() #type data tuple
+            cur.close()
+            if data and data[0][0] == int(token):
+                session['token'] = token  # Simpan token dalam sesi
+                response = {"status": "valid", "token": token, "success": True, "message": "token valid"}
+                return jsonify(response), 200
+            else:
+                response = {"status": "invalid", "success": False, "message": "token tidak valid"}
+                return jsonify(response)
+        except Exception as e:
+            response = {'success': False, 'message': str(e)}
+            return jsonify(response), 500
+    else:
+        response = {'success': False, 'message': 'token kosong'}
+        return jsonify(response), 500
+
+
 @app.route('/generate')
 def generate():
     return render_template('generate.html',menu='generate')
