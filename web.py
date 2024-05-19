@@ -216,29 +216,74 @@ def validate_token():
         response = {'success': False, 'message': 'token kosong'}
         return jsonify(response), 500
         
-    # Lakukan validasi token di sini
-    # if token == "123":
-    #     session['token'] = token  # Simpan token dalam sesi
-    #     response = {"status": "valid", "token": token}
-    #     return jsonify(response), 200
-    # else:
-    #     return jsonify({"status": "invalid", "message": "Invalid token"}), 400
-
 # Fungsi untuk validasi gambar wajah
 @app.route("/validate_image_wajah", methods=["POST"])
 def validate_image_wajah():
     # Ambil gambar dari permintaan POST
     file = request.files['file']
 
-    # Dapatkan nama file gambar wajah dari form data
-    file_name_wajah = file.filename
-    # Lakukan validasi nama file gambar wajah di sini
-    if file_name_wajah == "wajah.jpg":
-        session['file_name_wajah'] = file_name_wajah  # Simpan file_name_wajah dalam sesi
-        response = {"status": "valid", "file_name_wajah": file_name_wajah}
-        return jsonify(response), 200
+    if 'file' not in request.files:
+        return jsonify({'success': False, 'message': 'No file part'})
+    
+    if file.filename == '':
+        return jsonify({'success': False, 'message': 'No selected file'})
+    
+    if file and allowed_file(file.filename):
+        img_np = np.fromstring(file.read(), np.uint8)
+        face_verify = face_processing(img_np)
+        
+        if face_verify == "you are not registered yet":
+            response = {'success': False, 'message': 'you are not registered yet'}
+            return jsonify(response), 400        
+        if face_verify == "More than 1 face detected":
+            response = {'success': False, 'message': 'More than 1 face detected'}
+            return jsonify(response), 400
+        if face_verify == "there is no one face detected":
+            response = {'success': False, 'message': 'there is no one face detected'}
+            return jsonify(response), 400
+        if face_verify == "fake":
+            response = {'success': False, 'message': 'fake'}
+            return jsonify(response), 400
+        
+        if face_verify:
+            try:
+                img_login = face_verify.split('\\')[1]
+                
+                cur = mysql.connection.cursor()
+                query = "SELECT nim From students_registered WHERE file LIKE %s"
+                cur.execute(query, (img_login,))
+                # Mengambil hasil query
+                data = cur.fetchall() #type data tuple
+                cur.close()
+                if data:
+                    # nim_login = str(data[0]).split("'")[1]
+                    nim_login = data[0][0]
+                    session['nim_login'] = nim_login  # Simpan nim dalam sesi
+                    response = {"status": "valid", 'success': True, 'message': 'successfull', 'nim': nim_login}
+                    return jsonify(response)
+                else:
+                    response = {"status": "invalid", 'success': False, 'message': 'gada didaftar db!'}
+                    return jsonify(response)
+            except IndexError as e:
+                    response = {'success': False, 'message': str(e)}
+                    return jsonify(response), 500
+            except Exception as e:
+                    response = {'success': False, 'message': str(e)}
+                    return jsonify(response), 500
     else:
-        return jsonify({"status": "invalid", "message": "Invalid image file name for wajah"}), 400
+        response = {'success': False, 'message': 'Missing required data'}
+        return jsonify(response), 400  # Mengembalikan kode status 400 (Bad Request) jika data yang diperlukan tidak ditemukan
+
+
+    # # Dapatkan nama file gambar wajah dari form data
+    # file_name_wajah = file.filename
+    # # Lakukan validasi nama file gambar wajah di sini
+    # if file_name_wajah == "wajah.jpg":
+    #     session['file_name_wajah'] = file_name_wajah  # Simpan file_name_wajah dalam sesi
+    #     response = {"status": "valid", "file_name_wajah": file_name_wajah}
+    #     return jsonify(response), 200
+    # else:
+    #     return jsonify({"status": "invalid", "message": "Invalid image file name for wajah"}), 400
 
 # Fungsi untuk validasi gambar kelas
 @app.route("/validate_image_kelas", methods=["POST"])
@@ -249,9 +294,9 @@ def validate_image_kelas():
     # Dapatkan nama file gambar kelas dari form data
     file_name_kelas = file.filename
     # Lakukan validasi nama file gambar kelas di sini
-    if file_name_kelas == "kelas.jpg":
+    if file_name_kelas:
         session['file_name_kelas'] = file_name_kelas  # Simpan file_name_kelas dalam sesi
-        response = {"status": "valid", "file_name_kelas": file_name_kelas}
+        response = {"status": "valid", "message": "valid", "file": file_name_kelas}
         return jsonify(response), 200
     else:
         return jsonify({"status": "invalid", "message": "Invalid image file name for kelas"}), 400
@@ -259,22 +304,60 @@ def validate_image_kelas():
 # Fungsi untuk submit formulir login
 @app.route("/loginkelas", methods=["POST", "GET"])
 def login_kelas():
-     # Ambil nilai dari sesi
-    token = session.get('token')
-    file_name_wajah = session.get('file_name_wajah')
-    file_name_kelas = session.get('file_name_kelas')
+    token = request.form.get('token')
+    wajah = request.files['wajah']
+    kelas = request.files['kelas']
+    nim_login = session.get('nim_login')
 
-    # Lakukan pemrosesan formulir dan autentikasi di sini
-    if token and file_name_wajah and file_name_kelas:
-        return jsonify({
-            "success": True,
-            "message": "Login berhasil",
-            "token": token,
-            "file_name_wajah": file_name_wajah,
-            "file_name_kelas": file_name_kelas
-        }), 200
+    if wajah and allowed_file(wajah.filename) and kelas and allowed_file(kelas.filename):
+        try:
+            filename_wajah = secure_filename(str(token) + "_wajah_" + str(nim_login)) + ".jpg"  # Ganti ekstensi sesuai kebutuhan
+            filename_kelas = secure_filename(str(token) + "_kelas_" + str(nim_login)) + ".jpg"  # Ganti ekstensi sesuai kebutuhan
+
+            uploads_folder = os.path.join(os.getcwd(), 'static', 'upload/img_login')
+
+            wajah_np = np.fromstring(wajah.read(), np.uint8)
+            kelas_np = np.fromstring(kelas.read(), np.uint8)
+
+            file_path_wajah = os.path.join(uploads_folder, filename_wajah)  # Path penyimpanan file
+            with open(file_path_wajah, 'wb') as f:  # Mode 'wb' untuk menyimpan dalam mode biner
+                f.write(wajah_np)  # Menulis konten byte ke file
+
+            file_path_kelas = os.path.join(uploads_folder, filename_kelas)  # Path penyimpanan file
+            with open(file_path_kelas, 'wb') as f:  # Mode 'wb' untuk menyimpan dalam mode biner
+                f.write(kelas_np)  # Menulis konten byte ke file
+
+            name = "ngetes_idos"
+            cur = mysql.connection.cursor()
+            cur.execute("INSERT INTO students_login(nim,names,tokens,face_images,class_images) VALUES(%s,%s,%s,%s,%s)", (nim_login,name,token,filename_wajah,filename_kelas))
+            mysql.connection.commit()
+            cur.close()
+            
+            response = {"status": "valid", 'success': True, 'message': 'successfull', 'nim': nim_login, 'token': token}
+            return jsonify(response), 200
+        except Exception as e:
+            response = {'success': False, 'message': str(e)}
+            return jsonify(response), 500
     else:
-        return jsonify({"success": False, "message": "Incomplete form data"}), 400
+        response = {'success': False, 'message': 'Missing required data'}
+        return jsonify(response), 400  # Mengembalikan kode status 400 (Bad Request) jika data yang diperlukan tidak ditemukan
+
+    #  # Ambil nilai dari sesi
+    # nim_login = session.get('nim_login')
+    # file_name_wajah = session.get('file_name_wajah')
+    # file_name_kelas = session.get('file_name_kelas')
+
+    # # Lakukan pemrosesan formulir dan autentikasi di sini
+    # if token and file_name_wajah and file_name_kelas:
+    #     return jsonify({
+    #         "success": True,
+    #         "message": "Login berhasil",
+    #         "token": token,
+    #         "file_name_wajah": file_name_wajah,
+    #         "file_name_kelas": file_name_kelas
+    #     }), 200
+    # else:
+    #     return jsonify({"success": False, "message": "Incomplete form data"}), 400
 
 
 
