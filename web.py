@@ -393,7 +393,6 @@ def generatetable():
             dataKelas = cur.fetchall()
 
             if dataKehadiran and dataKelas:
-                # session['token'] = token  # Simpan token dalam sesi
                 response = {"status": "valid", "dataKehadiran": dataKehadiran, "dataKelas": dataKelas, "success": True, "message": "token valid"}
                 return jsonify(response), 200
             else:
@@ -405,7 +404,6 @@ def generatetable():
     else:
         response = {'success': False, 'message': 'token kosong'}
         return jsonify(response), 500
-
 
 @app.route('/generate')
 def generate():

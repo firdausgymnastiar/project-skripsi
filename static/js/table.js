@@ -74,8 +74,16 @@ function generateTable(responseDataKelas) {
           <td>${index + 1}</td>
           <td>${item[1]}</td>
           <td>${item[2]}</td>
-          <td>${item[4]}</td>
-          <td>${item[5]}</td>
+          <td><img src="static/upload/img_login/${
+            item[4]
+          }" alt="Ini gambar wajah dari mahasiswa dengan nim ${
+      item[1]
+    }" width="100" height="100"></td>
+          <td><img src="static/upload/img_login/${
+            item[5]
+          }" alt="Ini gambar kelas dari mahasiswa dengan nim ${
+      item[1]
+    }" width="100" height="100"></td>
           <td>${item[6]}</td>
           <td>hadir cuy</td>
       `
