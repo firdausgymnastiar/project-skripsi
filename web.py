@@ -381,14 +381,20 @@ def generatetable():
     if token:
         try:
             cur = mysql.connection.cursor()
-            query = "SELECT token From data_token WHERE token LIKE %s"
+
+            query = "SELECT * FROM students_login WHERE tokens LIKE %s"
             cur.execute(query, (token,))
             # Mengambil hasil query
-            data = cur.fetchall() #type data tuple
-            cur.close()
-            if data and data[0][0] == int(token):
-                session['token'] = token  # Simpan token dalam sesi
-                response = {"status": "valid", "token": token, "success": True, "message": "token valid"}
+            dataKehadiran = cur.fetchall()
+
+            query = "SELECT * FROM data_token WHERE token LIKE %s"
+            cur.execute(query, (token,))
+            # Mengambil hasil query
+            dataKelas = cur.fetchall()
+
+            if dataKehadiran and dataKelas:
+                # session['token'] = token  # Simpan token dalam sesi
+                response = {"status": "valid", "dataKehadiran": dataKehadiran, "dataKelas": dataKelas, "success": True, "message": "token valid"}
                 return jsonify(response), 200
             else:
                 response = {"status": "invalid", "success": False, "message": "token tidak valid"}
