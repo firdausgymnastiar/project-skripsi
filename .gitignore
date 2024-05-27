@@ -1,4 +1,5 @@
 myenv/
 static/adminlte/
+static/upload/
 requirements.txt
 LICENSE

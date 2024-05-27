@@ -111,6 +111,7 @@ function alertToken(responseDataToken) {
 }
 
 let validatedWajahFile = null
+let validatedNIM = null
 async function validateWajah() {
   const input = gambarWajah
   const file = input.files[0]
@@ -132,6 +133,7 @@ async function validateWajah() {
   if (response.ok && responseDataWajah.status === "valid") {
     alertWajah(responseDataWajah)
     validatedWajahFile = file // Simpan file gambar wajah yang valid
+    validatedNIM = responseDataWajah.nim // Simpan file gambar wajah yang valid
     isWajahValidated = true
     tokenInput.disabled = true
     validateTokenBtn.disabled = true
@@ -358,11 +360,13 @@ async function simpanData(event) {
 
   console.log("Token:", validatedToken)
   console.log("Wajah:", validatedWajahFile)
+  console.log("NIM:", validatedNIM)
   console.log("Kelas:", validatedKelasFile)
 
   token = validatedToken
   wajah = validatedWajahFile
   kelas = validatedKelasFile
+  nim = validatedNIM
 
   overlay.style.display = "flex"
   if (!token || !wajah || !kelas) {
@@ -380,6 +384,13 @@ async function simpanData(event) {
   formData.append("token", token)
   formData.append("gambarWajah", wajah)
   formData.append("gambarKelas", kelas)
+  // Buat objek JSON untuk nim
+  // const jsonNim = JSON.stringify({ nim: nim })
+
+  // Tambahkan JSON nim ke FormData sebagai blob
+  // formData.append("nim", new Blob([jsonNim], { type: "application/json" }))
+  formData.append("nim", nim) // Tambahkan nim ke FormData
+
   const response = await fetch("/loginkelas", {
     method: "POST",
     body: formData,
@@ -402,6 +413,7 @@ function displayAlert(responseData) {
   let message = responseData.message
   let nim = responseData.nim
   let token = responseData.token
+  let name = responseData.name
 
   let alertTitle, alertIcon, alertText
 
@@ -414,7 +426,7 @@ function displayAlert(responseData) {
     case "successfull":
       alertTitle = "Login Berhasil"
       alertIcon = "success"
-      alertText = `Selamat Datang ${nim} di kelas dengan token: ${token}!`
+      alertText = `Selamat Datang ${name}(${nim}) di kelas dengan token: ${token}!`
       break
     default:
       alertTitle = "Error!"

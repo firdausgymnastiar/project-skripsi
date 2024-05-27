@@ -203,7 +203,7 @@ def validate_token():
             data = cur.fetchall() #type data tuple
             cur.close()
             if data and data[0][0] == int(token):
-                session['token'] = token  # Simpan token dalam sesi
+                # session['token'] = token  # Simpan token dalam sesi
                 response = {"status": "valid", "token": token, "success": True, "message": "token valid"}
                 return jsonify(response), 200
             else:
@@ -258,7 +258,7 @@ def validate_image_wajah():
                 if data:
                     # nim_login = str(data[0]).split("'")[1]
                     nim_login = data[0][0]
-                    session['nim_login'] = nim_login  # Simpan nim dalam sesi
+                    # session['nim_login'] = nim_login  # Simpan nim dalam sesi
                     response = {"status": "valid", 'success': True, 'message': 'successfull', 'nim': nim_login}
                     return jsonify(response)
                 else:
@@ -295,7 +295,7 @@ def validate_image_kelas():
     file_name_kelas = file.filename
     # Lakukan validasi nama file gambar kelas di sini
     if file_name_kelas:
-        session['file_name_kelas'] = file_name_kelas  # Simpan file_name_kelas dalam sesi
+        # session['file_name_kelas'] = file_name_kelas  # Simpan file_name_kelas dalam sesi
         response = {"status": "valid", "message": "valid", "file": file_name_kelas}
         return jsonify(response), 200
     else:
@@ -307,7 +307,14 @@ def login_kelas():
     token = request.form.get('token')
     wajah = request.files['gambarWajah']
     kelas = request.files['gambarKelas']
-    nim_login = session.get('nim_login')
+    # Ambil data dari request JSON
+    # nim_login = ''
+    # if request.is_json:
+    # data = request.get_json()
+    # nim_login = data.get('nim')
+    # nim_login = request.json.get("nim")
+    nim_login = request.form.get('nim')  # Ambil nim dari FormData
+    # nim_login = session.get('nim_login')
     # print(request.form)  # Debug: Cetak form data
     # print(request.files)  # Debug: Cetak files data
 
@@ -339,13 +346,19 @@ def login_kelas():
             with open(file_path_kelas, 'wb') as f:  # Mode 'wb' untuk menyimpan dalam mode biner
                 f.write(kelas_np)  # Menulis konten byte ke file
 
-            name = "ngetes_idos"
             cur = mysql.connection.cursor()
+            query = "SELECT name From students_registered WHERE nim LIKE %s"
+            cur.execute(query, (nim_login,))
+            # Mengambil hasil query
+            data = cur.fetchall() #type data tuple
+            name = data[0][0]
+            # name = "ngetes_idos"
+            # cur = mysql.connection.cursor()
             cur.execute("INSERT INTO students_login(nim,names,tokens,face_images,class_images) VALUES(%s,%s,%s,%s,%s)", (nim_login,name,token,filename_wajah,filename_kelas))
             mysql.connection.commit()
             cur.close()
             
-            response = {"status": "valid", 'success': True, 'message': 'successfull', 'nim': nim_login, 'token': token}
+            response = {"status": "valid", 'success': True, 'message': 'successfull', 'nim': nim_login, 'token': token, 'name': name}
             return jsonify(response), 200
         except Exception as e:
             response = {'success': False, 'message': str(e)}
