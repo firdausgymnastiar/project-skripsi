@@ -4,7 +4,7 @@ from werkzeug.utils import secure_filename
 import os
 import numpy as np
 
-from ai import face_processing
+from ai import face_processing, class_processing
 
 
 app = Flask(__name__)
@@ -288,18 +288,44 @@ def validate_image_wajah():
 # Fungsi untuk validasi gambar kelas
 @app.route("/validate_image_kelas", methods=["POST"])
 def validate_image_kelas():
-    # Ambil gambar dari permintaan POST
-    file = request.files['file']
+    try:
+        # Ambil gambar dari permintaan POST
+        file = request.files['file']
 
+        if 'file' not in request.files:
+            return jsonify({'success': False, 'message': 'No file part'})
+
+        if file.filename == '':
+            return jsonify({'success': False, 'message': 'No selected file'})
+
+        if file and allowed_file(file.filename):
+            # img_np = np.fromstring(file.read(), np.uint8)
+            class_name, confidence_score = class_processing(file)
+            
+            if class_name and confidence_score:
+                if class_name == "Classroom":
+                    response = {'success': True, 'message': 'Classroom', 'confidence': confidence_score}
+                    return jsonify(response)     
+                if class_name == "Not A Classroom":
+                    response = {'success': False, 'message': 'Not A Classroom', 'confidence': confidence_score}
+                    return jsonify(response)
+            else:
+                response = {'success': False, 'message': 'Invalid image file name for kelas'}
+                return jsonify(response)
+    except Exception as e:
+        response = {'success': False, 'message': str(e)}
+        return jsonify(response), 500
+
+        
     # Dapatkan nama file gambar kelas dari form data
-    file_name_kelas = file.filename
-    # Lakukan validasi nama file gambar kelas di sini
-    if file_name_kelas:
-        # session['file_name_kelas'] = file_name_kelas  # Simpan file_name_kelas dalam sesi
-        response = {"status": "valid", "message": "valid", "file": file_name_kelas}
-        return jsonify(response), 200
-    else:
-        return jsonify({"status": "invalid", "message": "Invalid image file name for kelas"}), 400
+    # file_name_kelas = file.filename
+    # # Lakukan validasi nama file gambar kelas di sini
+    # if file_name_kelas:
+    #     # session['file_name_kelas'] = file_name_kelas  # Simpan file_name_kelas dalam sesi
+    #     response = {"status": "valid", "message": "valid", "file": file_name_kelas}
+    #     return jsonify(response), 200
+    # else:
+    #     return jsonify({"status": "invalid", "message": "Invalid image file name for kelas"}), 400
 
 # Fungsi untuk submit formulir login
 @app.route("/loginkelas", methods=["POST", "GET"])

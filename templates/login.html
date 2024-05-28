@@ -31,7 +31,7 @@
                             <button type="button" class="btn btn-success btn-sm mt-2" id="validateTokenBtn">Validate
                                 Token</button>
                         </div>
-                        <div class="form-group">
+                        <div id="sectionWajah" style="display: none;" class="form-group">
                             <label for="gambarWajah">Gambar Wajah</label>
                             <br>
                             <button id="cameraButton" type="button"
@@ -48,7 +48,7 @@
                             <button type="button" class="btn btn-success btn-sm mt-2" id="validateWajahBtn"
                                 style="display: none;" disabled>Validate Gambar Wajah</button>
                         </div>
-                        <div class="form-group">
+                        <div id="sectionKelas" style="display: none;" class="form-group">
                             <label for="gambarKelas">Gambar Kelas</label>
                             <br>
                             <button id="cameraButton2" type="button"
@@ -59,14 +59,16 @@
                             <input type="file" class="form-control" accept="image/*" capture="camera" id="gambarKelas"
                                 name="gambarKelas" placeholder="Masukan gambar Kelas Anda" style="display: none;">
                             <img id="preview2" style="max-width: 300px; max-height: 300px; display: none;">
-                            <br>
+                            <p>Catatan: gambar harus berisi bagian depan kelas(seperti papan tulis, dosen, meja dose,
+                                dll)</p>
+
                             <button id="ulangiCamera2" style="display: none;" type="button"
                                 class="btn btn-primary btn-sm d-grid gap-2 d-md-block" disabled>Ulangi</button>
                             <button type="button" class="btn btn-success btn-sm mt-2" id="validateKelasBtn"
                                 style="display: none;" disabled>Validate Gambar Kelas</button>
                         </div>
                     </div>
-                    <div class="card-footer">
+                    <div id="sectionSubmit" style="display: none;" class="card-footer">
                         <button type="submit" class="btn btn-success" id="submitButton" disabled>
                             <span id="submitText">Submit</span>
                         </button>

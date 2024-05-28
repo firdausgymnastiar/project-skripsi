@@ -6,6 +6,9 @@ import argparse
 import warnings
 import time
 
+from keras.models import load_model  # TensorFlow is required for Keras to work
+from PIL import Image, ImageOps  # Install pillow instead of PIL
+
 from deepface import DeepFace
 from src.anti_spoof_predict import AntiSpoofPredict
 from src.generate_patches import CropImage
@@ -84,3 +87,49 @@ def face_processing(img_cv):
                 return "fake"
     except ValueError:
         return "there is no one face detected"
+    
+
+def class_processing(image_path):
+    model_path = 'keras_Model.h5'
+    labels_path ='labels.txt'
+    # image_path = cv2.imdecode(image, cv2.IMREAD_COLOR)
+        # Disable scientific notation for clarity
+    np.set_printoptions(suppress=True)
+
+    # Load the model
+    model = load_model(model_path, compile=False)
+
+    # Load the labels
+    class_names = open(labels_path, "r").readlines()
+
+    # Create the array of the right shape to feed into the keras model
+    data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
+
+    # Load and process the image
+    image = Image.open(image_path).convert("RGB")
+
+    # Resize the image to be at least 224x224 and then crop from the center
+    size = (224, 224)
+    image = ImageOps.fit(image, size, Image.Resampling.LANCZOS)
+
+    # Turn the image into a numpy array
+    image_array = np.asarray(image)
+
+    # Normalize the image
+    normalized_image_array = (image_array.astype(np.float32) / 127.5) - 1
+
+    # Load the image into the array
+    data[0] = normalized_image_array
+
+    # Predicts the model
+    prediction = model.predict(data)
+    index = np.argmax(prediction)
+    class_name = class_names[index].strip()
+    confidence_score = prediction[0][index] * 100
+    class_name = class_name[2:] 
+    confidence_score = round(confidence_score, 2)
+    print(class_name)
+    print(confidence_score)
+
+    return class_name, confidence_score
+

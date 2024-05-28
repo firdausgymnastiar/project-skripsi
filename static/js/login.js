@@ -13,6 +13,9 @@ const preview2 = document.getElementById("preview2")
 const validateKelasBtn = document.getElementById("validateKelasBtn")
 const submitButton = document.getElementById("submitButton")
 const overlay = document.getElementById("overlay")
+const sectionWajah = document.getElementById("sectionWajah")
+const sectionKelas = document.getElementById("sectionKelas")
+const sectionSubmit = document.getElementById("sectionSubmit")
 
 let isTokenValidated = false
 let isWajahValidated = false
@@ -48,6 +51,7 @@ async function validateToken() {
     alertToken(responseDataToken)
     validatedToken = token // Simpan file gambar wajah yang valid
     isTokenValidated = true
+    sectionWajah.style.display = "block"
     tokenInput.disabled = true
     validateTokenBtn.disabled = true
     cameraButton.disabled = false
@@ -135,6 +139,7 @@ async function validateWajah() {
     validatedWajahFile = file // Simpan file gambar wajah yang valid
     validatedNIM = responseDataWajah.nim // Simpan file gambar wajah yang valid
     isWajahValidated = true
+    sectionKelas.style.display = "block"
     tokenInput.disabled = true
     validateTokenBtn.disabled = true
     cameraButton.disabled = true
@@ -247,10 +252,11 @@ async function validateKelas() {
   })
 
   const responseDataKelas = await response.json()
-  if (response.ok && responseDataKelas.status === "valid") {
+  if (response.ok && responseDataKelas.success === true) {
     alertKelas(responseDataKelas)
     validatedKelasFile = file // Simpan file gambar wajah yang valid
     isKelasValidated = true
+    sectionSubmit.style.display = "block"
     tokenInput.disabled = true
     validateTokenBtn.disabled = true
     cameraButton.disabled = true
@@ -261,7 +267,6 @@ async function validateKelas() {
     validateKelasBtn.disabled = true
   } else {
     alertKelas(responseDataKelas)
-
     isKelasValidated = false
     tokenInput.disabled = true
     validateTokenBtn.disabled = true
@@ -277,15 +282,25 @@ async function validateKelas() {
 
 function alertKelas(responseDataKelas) {
   let message = responseDataKelas.message
-  let file = responseDataKelas.file
+  let confidence = responseDataKelas.confidence
 
   let alertTitle, alertIcon, alertText
 
   switch (message) {
-    case "valid":
-      alertTitle = "Kelas Valid!"
+    case "Classroom":
+      alertTitle = "Ruang Kelas Terdeteksi!"
       alertIcon = "success"
-      alertText = `file gambar anda: ${file}!`
+      alertText = `Anda terdeteksi di ruang kelas, silahkan submit untuk kehadiran anda!`
+      break
+    case "Not A Classroom":
+      alertTitle = "Ruang Kelas Tidak Terdeteksi!"
+      alertIcon = "error"
+      alertText = `${confidence}% yakin gambar yang diinput bukan gambar ruang kelas`
+      break
+    case "No file part":
+      alertTitle = "File Gambar Tidak Ada!"
+      alertIcon = "error"
+      alertText = "Mohon ambil gambar terlebih dahulu!"
       break
     default:
       alertTitle = "Error!"
@@ -426,7 +441,7 @@ function displayAlert(responseData) {
     case "successfull":
       alertTitle = "Login Berhasil"
       alertIcon = "success"
-      alertText = `Selamat Datang ${name}(${nim}) di kelas dengan token: ${token}!`
+      alertText = `Selamat Datang ${name}(NIM: ${nim}) di kelas dengan token: ${token}!`
       break
     default:
       alertTitle = "Error!"
