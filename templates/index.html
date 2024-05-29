@@ -1,30 +1,36 @@
 {% include 'header.html' %}
-
-<!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
-  <!-- Content Header (Page header) -->
   <div class="content-header">
     <div class="container-fluid">
-      <div class="row mb-2">
-        <div class="col-sm-6">
-          <h1 class="m-0">SISTEM PRESENSI MANDIRI (SIPREMAN)</h1>
-        </div>
-      </div><!-- /.row -->
-    </div><!-- /.container-fluid -->
-  </div>
-  <!-- /.content-header -->
-
-  <!-- Main content -->
-  <section class="content">
-    <div class="container-fluid">
-      <!-- Small boxes (Stat box) -->
       <div class="row">
-        <div class="col-lg-3 col-6">
-
+        <div class="col">
+          <div class="card">
+            <h5 class="card-header"><b>Dashboard</b></h5>
+            <div class="card-body">
+              <h5 class="card-title"><b>SELAMAT DATANG!</b></h5>
+              <p class="card-text">Sistem Presensi Mandiri (SIPREMAN) adalah sebuah website yang digunakan untuk
+                melakukan presensi secara mandiri oleh mahasiswa dengan menggunakan <i>face recognition</i> dan <i>image
+                  classification.</i></p>
+              <p>Berikut adalah beberapa menu yang ada di website SIPREMAN.</p>
+              <dl class="row">
+                <dt class="col-sm-2">Registrasi Wajah</dt>
+                <dd class="col-sm-10">Digunakan untuk mendaftarkan wajah mahasiswa sebelum melakukan presensi.</dd>
+                <dt class="col-sm-2">Masuk Kelas</dt>
+                <dd class="col-sm-10">Digunakan untuk melakukan presensi pada suatu kelas.</dd>
+                <dt class="col-sm-2">Table Kehadiran</dt>
+                <dd class="col-sm-10">Digunakan untuk melihat detail dan tabel kehadiran dari suatu kelas.</dd>
+                <dt class="col-sm-2">Generate Token</dt>
+                <dd class="col-sm-10">Digunakan untuk membuat token kelas yang akan digunakan sebagai akses presensi
+                  oleh mahasiswa
+                </dd>
+              </dl>
+              <a class="btn btn-success" data-widget="pushmenu" href="#" role="button">Cek Menu</a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </section>
+  </div>
 </div>
 
 {% include 'footer.html' %}
