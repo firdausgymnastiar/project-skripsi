@@ -7,7 +7,6 @@ const preview = document.getElementById("preview")
 async function sendToServer() {
   const formData = new FormData(formRegister)
 
-  // Tampilkan overlay saat memulai submit form
   document.getElementById("overlay").style.display = "flex"
 
   const response = await fetch("/registerwajah", {
@@ -19,11 +18,9 @@ async function sendToServer() {
     if (response.ok && responseData.success) {
       displayAlert(responseData)
     } else {
-      // Jika permintaan gagal atau respons dari Flask menunjukkan kegagalan
       displayAlert(responseData.error_message || responseData)
     }
   } catch (error) {
-    // Jika terjadi kesalahan dalam melakukan permintaan
     displayAlert("Terjadi kesalahan dalam mengirim permintaan")
     console.error("Error:", error)
   }
@@ -53,8 +50,8 @@ gambarWajah.addEventListener("change", function () {
 })
 
 function displayAlert(responseData) {
-  let message = responseData.message // Mengambil nilai dari kunci 'message'
-  let nim = responseData.nim // Mengambil nilai dari kunci 'nim'
+  let message = responseData.message
+  let nim = responseData.nim
   let alertTitle, alertIcon, alertText
 
   switch (message) {
@@ -78,12 +75,17 @@ function displayAlert(responseData) {
       alertIcon = "error"
       alertText = "Mohon pilih gambar terlebih dahulu!"
       break
+    case "Invalid file type":
+      alertTitle = "Format file tidak diizinkan!"
+      alertIcon = "error"
+      alertText = "Format gambar yang diizinkan adalah jpg, jpeg, png"
+      break
     case "Missing required data":
       alertTitle = "Formulir Tidak Lengkap!"
       alertIcon = "error"
       alertText = "Mohon isi formulir dengan lengkap!"
       break
-    case "gada didaftar db!":
+    case "Not found in database":
       alertTitle = "Error!"
       alertIcon = "error"
       alertText = "Wajah terdaftar tetapi tidak tersedia di database"
@@ -93,30 +95,15 @@ function displayAlert(responseData) {
       alertIcon = "success"
       alertText = `Wajah anda telah disimpan dengan nim: ${nim}`
       break
+    case "nim already registered":
+      alertTitle = "NIM Anda Telah Terdaftar!"
+      alertIcon = "error"
+      alertText = `NIM anda telah terdaftar. Mohon ulangi!`
+      break
     case "already registered":
       alertTitle = "Wajah Anda Telah Terdaftar!"
       alertIcon = "error"
       alertText = `Wajah anda telah terdaftar dengan NIM: ${nim}. Mohon ulangi!`
-      break
-    case "gagal pas di mysql":
-      alertTitle = "Error!"
-      alertIcon = "error"
-      alertText = "gagal pas di mysql"
-      break
-    case "error setelah face processing":
-      alertTitle = "Error!"
-      alertIcon = "error"
-      alertText = "error setelah face processing"
-      break
-    case "Terjadi kesalahan dalam mengirim permintaan":
-      alertTitle = "Error!"
-      alertIcon = "error"
-      alertText = "Terjadi kesalahan dalam mengirim permintaan"
-      break
-    case "form kosong":
-      alertTitle = "Error!"
-      alertIcon = "error"
-      alertText = "Form kosong / terjadi kesalahan, mohon ulangi!"
       break
     case "fake":
       alertTitle = "Terindikasi Palsu!"

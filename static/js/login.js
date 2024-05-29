@@ -32,11 +32,6 @@ function checkFormValidity() {
 let validatedToken = null
 async function validateToken() {
   const token = tokenInput.value
-  // if (!token) {
-  //   alert("Token is required")
-  //   return
-  // }
-  // Tampilkan overlay saat memulai submit form
   overlay.style.display = "flex"
   const response = await fetch("/validate_token", {
     method: "POST",
@@ -49,7 +44,7 @@ async function validateToken() {
   const responseDataToken = await response.json()
   if (response.ok && responseDataToken.status === "valid") {
     alertToken(responseDataToken)
-    validatedToken = token // Simpan file gambar wajah yang valid
+    validatedToken = token
     isTokenValidated = true
     sectionWajah.style.display = "block"
     tokenInput.disabled = true
@@ -107,8 +102,6 @@ function alertToken(responseDataToken) {
     allowOutsideClick: false,
   }).then((result) => {
     if (result.isConfirmed) {
-      // tokenInput.value = ""
-      // Tampilkan overlay saat memulai submit form
       overlay.style.display = "none"
     }
   })
@@ -120,10 +113,6 @@ async function validateWajah() {
   const input = gambarWajah
   const file = input.files[0]
 
-  // if (!file) {
-  //   alert("Please select a file")
-  //   return
-  // }
   overlay.style.display = "flex"
   const formData = new FormData()
   formData.append("file", file)
@@ -136,8 +125,8 @@ async function validateWajah() {
   const responseDataWajah = await response.json()
   if (response.ok && responseDataWajah.status === "valid") {
     alertWajah(responseDataWajah)
-    validatedWajahFile = file // Simpan file gambar wajah yang valid
-    validatedNIM = responseDataWajah.nim // Simpan file gambar wajah yang valid
+    validatedWajahFile = file
+    validatedNIM = responseDataWajah.nim
     isWajahValidated = true
     sectionKelas.style.display = "block"
     tokenInput.disabled = true
@@ -206,12 +195,6 @@ function alertWajah(responseDataWajah) {
       alertIcon = "error"
       alertText = "Wajah terdaftar tetapi tidak tersedia di database"
       break
-    case "Missing required data":
-      alertTitle = "Format foto tidak diizinkan!"
-      alertIcon = "error"
-      alertText =
-        "Format foto yang diizinkan hanya .jpg/.jpeg/.png . Mohon Ulangi!"
-      break
     case "Invalid file type":
       alertTitle = "Format file tidak diizinkan!"
       alertIcon = "error"
@@ -230,7 +213,6 @@ function alertWajah(responseDataWajah) {
     allowOutsideClick: false,
   }).then((result) => {
     if (result.isConfirmed) {
-      // window.location.href = "/login"
       overlay.style.display = "none"
     }
   })
@@ -240,26 +222,17 @@ let validatedKelasFile = null
 async function validateKelas() {
   const input = gambarKelas
   const file = input.files[0]
-
-  // if (!file) {
-  //   alert("Please select a file")
-  //   return
-  // }
-
   overlay.style.display = "flex"
-
   const formData = new FormData()
   formData.append("file", file)
-
   const response = await fetch("/validate_image_kelas", {
     method: "POST",
     body: formData,
   })
-
   const responseDataKelas = await response.json()
   if (response.ok && responseDataKelas.success === true) {
     alertKelas(responseDataKelas)
-    validatedKelasFile = file // Simpan file gambar wajah yang valid
+    validatedKelasFile = file
     isKelasValidated = true
     sectionSubmit.style.display = "block"
     tokenInput.disabled = true
@@ -325,7 +298,6 @@ function alertKelas(responseDataKelas) {
     allowOutsideClick: false,
   }).then((result) => {
     if (result.isConfirmed) {
-      // window.location.href = "/login"
       overlay.style.display = "none"
     }
   })
@@ -381,7 +353,7 @@ gambarKelas.addEventListener("change", function () {
 })
 
 async function simpanData(event) {
-  event.preventDefault() // Prevent the default form submission behavior
+  event.preventDefault()
 
   console.log("Token:", validatedToken)
   console.log("Wajah:", validatedWajahFile)
@@ -398,23 +370,11 @@ async function simpanData(event) {
     displayAlert("Token, wajah, dan kelas harus diisi.")
     return
   }
-
-  // const token = tokenInput.value
-  // const inputWajah = gambarWajah
-  // const fileWajah = inputWajah.files[0]
-  // const inputKelas = gambarKelas
-  // const fileKelas = inputKelas.files[0]
-
   const formData = new FormData(formLogin)
   formData.append("token", token)
   formData.append("gambarWajah", wajah)
   formData.append("gambarKelas", kelas)
-  // Buat objek JSON untuk nim
-  // const jsonNim = JSON.stringify({ nim: nim })
-
-  // Tambahkan JSON nim ke FormData sebagai blob
-  // formData.append("nim", new Blob([jsonNim], { type: "application/json" }))
-  formData.append("nim", nim) // Tambahkan nim ke FormData
+  formData.append("nim", nim)
 
   const response = await fetch("/loginkelas", {
     method: "POST",

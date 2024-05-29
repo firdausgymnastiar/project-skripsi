@@ -1,21 +1,16 @@
 {% include 'header.html' %}
-<!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
     <div class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
                     <h1 class="m-0">Table Kehadiran</h1>
-                </div><!-- /.col -->
-            </div><!-- /.row -->
-        </div><!-- /.container-fluid -->
+                </div>
+            </div>
+        </div>
     </div>
-    <!-- /.content-header -->
-    <!-- Main content -->
     <section class="content">
         <div class="container-fluid">
-            <!-- general form elements -->
             <div class="card card-primary">
                 <div class="card-header">
                     <h3 class="card-title">Lihat Table Kehadiran di Kelas Anda</h3>
@@ -30,9 +25,7 @@
                                     <button type="button" class="btn btn-info btn-flat" id="goBtn">Go!</button>
                                 </span>
                             </div>
-                            <!-- /input-group -->
                         </div>
-                        <!-- /.card-body -->
                     </div>
                     <div style="display: none;" id="detail">
                         <div class="card">
@@ -42,7 +35,6 @@
                                     Detail Kelas
                                 </h3>
                             </div>
-                            <!-- /.card-header -->
                             <div class="card-body">
                                 <dl id="data-list">
                                 </dl>
@@ -52,17 +44,7 @@
                             <div class="card">
                                 <div class="card-header">
                                     <h3 class="card-title"><b>Tabel Kehadiran</b></h3>
-                                    <!-- <div class="card-tools">
-                                        <ul class="pagination pagination-sm float-right">
-                                            <li class="page-item"><a class="page-link" href="#">&laquo;</a></li>
-                                            <li class="page-item"><a class="page-link" href="#">1</a></li>
-                                            <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                            <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                            <li class="page-item"><a class="page-link" href="#">&raquo;</a></li>
-                                        </ul>
-                                    </div> -->
                                 </div>
-                                <!-- /.card-header -->
                                 <div class="card-body table-responsive p-0">
                                     <table class="table" id="data-table">
                                         <thead>
@@ -82,9 +64,7 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- /.card-body -->
                     </div>
-                    <!-- Overlay -->
                     <div class="overlay" id="overlay" style="display: none;">
                         <div class="spinner-border text-primary" role="status">
                             <span class="visually-hidden"></span>
@@ -93,11 +73,8 @@
 
                 </div>
             </div>
-            <!-- /.card -->
-
-        </div><!-- /.container-fluid -->
+        </div>
     </section>
-    <!-- /.content -->
 </div>
 <script src="{{ url_for('static', filename='js/table.js') }}"></script>
 {% include 'footer.html' %}

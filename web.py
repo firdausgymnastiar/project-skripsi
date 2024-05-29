@@ -43,48 +43,59 @@ def registerwajah():
         
         if not all([email, nama, nim, prodi, angkatan, file]):
             return jsonify({'success': False, 'message': 'Missing required data'}), 400
+        
+        try:
+            cur = mysql.connection.cursor()
+            cur.execute("SELECT nim FROM students_registered WHERE nim = %s", (nim,))
+            data_nim = cur.fetchone()
+            cur.close()
 
-        if file.filename == '':
-            return jsonify({'success': False, 'message': 'No selected file'}), 400
+            if data_nim:
+                return jsonify({'success': False, 'message': 'nim already registered'}), 400
+            if file.filename == '':
+                return jsonify({'success': False, 'message': 'No selected file'}), 400
 
-        if not allowed_file(file.filename):
-            return jsonify({'success': False, 'message': 'Invalid file type'}), 400
+            if not allowed_file(file.filename):
+                return jsonify({'success': False, 'message': 'Invalid file type'}), 400
 
-        img_np = np.frombuffer(file.read(), np.uint8)
-        face_verify = face_processing(img_np)
+            img_np = np.frombuffer(file.read(), np.uint8)
+            face_verify = face_processing(img_np)
 
-        if face_verify in ["More than 1 face detected", "there is no one face detected", "fake"]:
-            return jsonify({'success': False, 'message': face_verify}), 400
+            if face_verify in ["More than 1 face detected", "there is no one face detected", "fake"]:
+                return jsonify({'success': False, 'message': face_verify}), 400
 
-        if face_verify == "you are not registered yet":
-            filename = secure_filename(f"{nim}.jpg")
-            try:
-                cur = mysql.connection.cursor()
-                cur.execute("INSERT INTO students_registered (email, name, nim, major, batch, file) VALUES (%s, %s, %s, %s, %s, %s)", 
-                            (email, nama, nim, prodi, angkatan, filename))
-                mysql.connection.commit()
-                cur.close()
+            if face_verify == "you are not registered yet":
+                filename = secure_filename(f"{nim}.jpg")
+                try:
+                    cur = mysql.connection.cursor()
+                    cur.execute("INSERT INTO students_registered (email, name, nim, major, batch, file) VALUES (%s, %s, %s, %s, %s, %s)", 
+                                (email, nama, nim, prodi, angkatan, filename))
+                    mysql.connection.commit()
+                    cur.close()
 
-                file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                with open(file_path, 'wb') as f:
-                    f.write(img_np)
+                    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                    with open(file_path, 'wb') as f:
+                        f.write(img_np)
 
-                return jsonify({'success': True, 'message': 'successful', 'nim': nim})
-            except Exception as e:
-                return jsonify({'success': False, 'message': f'Database error: {str(e)}'}), 500
-        else:
-            img_login = face_verify.split('\\')[1]
-            try:
-                cur = mysql.connection.cursor()
-                cur.execute("SELECT nim FROM students_registered WHERE file = %s", (img_login,))
-                data = cur.fetchone()
-                cur.close()
-                if data:
-                    return jsonify({'success': False, 'message': 'already registered', 'nim': data[0]})
-                else:
-                    return jsonify({'success': False, 'message': 'Not found in database'}), 400
-            except Exception as e:
-                return jsonify({'success': False, 'message': f'Database error: {str(e)}'}), 500
+                    return jsonify({'success': True, 'message': 'successful', 'nim': nim})
+                except Exception as e:
+                    return jsonify({'success': False, 'message': f'Database error: {str(e)}'}), 500
+            else:
+                img_login = face_verify.split('\\')[1]
+                try:
+                    cur = mysql.connection.cursor()
+                    cur.execute("SELECT nim FROM students_registered WHERE file = %s", (img_login,))
+                    data = cur.fetchone()
+                    cur.close()
+                    if data:
+                        return jsonify({'success': False, 'message': 'already registered', 'nim': data[0]})
+                    else:
+                        return jsonify({'success': False, 'message': 'Not found in database'}), 400
+                except Exception as e:
+                    return jsonify({'success': False, 'message': f'Database error: {str(e)}'}), 500
+        except:
+            return jsonify({'success': False, 'message': f'Database error: {str(e)}'}), 500
+            
     return render_template('register.html')
 
 @app.route('/login')
@@ -196,7 +207,7 @@ def login_kelas():
             cur = mysql.connection.cursor()
             cur.execute("SELECT name From students_registered WHERE nim LIKE %s", 
                         (nim_login,))
-            name = cur.fetchone() #type data tuple
+            name = cur.fetchone()
             
             cur.execute("INSERT INTO students_login (nim, names, tokens, face_images, class_images) VALUES (%s, %s, %s, %s, %s)", 
                         (nim_login, name[0], token, filename_wajah, filename_kelas))
@@ -223,11 +234,9 @@ def generatetable():
     try:
         cur = mysql.connection.cursor()
         cur.execute("SELECT * FROM students_login WHERE tokens = %s", (token,))
-        # Mengambil hasil query
         dataKehadiran = cur.fetchall()
 
         cur.execute("SELECT * FROM data_token WHERE token = %s", (token,))
-        # Mengambil hasil query
         dataKelas = cur.fetchall()
         if not all([dataKehadiran, dataKelas]):
             return jsonify({"status": "invalid", "success": False, "message": "token tidak valid"})        
@@ -259,8 +268,7 @@ def generatetoken():
     try:
         cur = mysql.connection.cursor()
         cur.execute("SELECT token From data_token WHERE token = %s", (token,))
-        # Mengambil hasil query
-        data = cur.fetchone() #type data tuple
+        data = cur.fetchone()
         cur.close()
         if data and data[0] == token:
             return jsonify({'success': False, 'message': 'token is existing'}), 400
@@ -272,9 +280,9 @@ def generatetoken():
                 cur.close()
                 return jsonify({'success': True, 'message': 'successfull', 'token': token})
             except Exception as e: 
-                return jsonify({'success': False, 'message': str(e)}), 500  # Mengembalikan kode status 500 (Internal Server Error) jika terjadi kesalahan
+                return jsonify({'success': False, 'message': str(e)}), 500  
     except Exception as e:
-        return jsonify({'success': False, 'message': str(e)}), 500  # Mengembalikan kode status 500 (Internal Server Error) jika terjadi kesalahan    
+        return jsonify({'success': False, 'message': str(e)}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)

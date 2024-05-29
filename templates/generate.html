@@ -1,27 +1,20 @@
 {% include 'header.html' %}
-<!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
     <div class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
                     <h1 class="m-0">Generate Token Kelas</h1>
-                </div><!-- /.col -->
-            </div><!-- /.row -->
-        </div><!-- /.container-fluid -->
+                </div>
+            </div>
+        </div>
     </div>
-    <!-- /.content-header -->
-    <!-- Main content -->
     <section class="content">
         <div class="container-fluid">
-            <!-- general form elements -->
             <div class="card card-primary">
                 <div class="card-header">
                     <h3 class="card-title">Buat Token Kelas Anda</h3>
                 </div>
-                <!-- /.card-header -->
-                <!-- form start -->
                 <form role="form" id="formGenerate" action="/generatetoken" method="POST">
                     <div class="card-body">
                         <div class="form-group">
@@ -69,7 +62,6 @@
                                 placeholder="Masukan deskripsi kelas">
                         </div>
                         <br>
-                        <!-- /input-group -->
                         <div class="form-group">
                             <div class="input-group mb-3">
                                 <div class="input-group-prepend">
@@ -77,19 +69,14 @@
                                         class="btn btn-warning">Generate
                                         Token</button>
                                 </div>
-                                <!-- /btn-group -->
                                 <input type="number" class="form-control" id="randomNumberDisplay" name="token"
                                     placeholder="Klik generate token" readonly>
                             </div>
                         </div>
-                        <!-- /input-group -->
                     </div>
-                    <!-- /.card-body -->
                     <div class="card-footer">
                         <button type="submit" class="btn btn-success">Aktifkan Token!</button>
                     </div>
-
-                    <!-- Overlay -->
                     <div class="overlay" id="overlay" style="display: none;">
                         <div class="spinner-border text-primary" role="status">
                             <span class="visually-hidden"></span>
@@ -100,7 +87,6 @@
         </div>
     </section>
 </div>
-<!-- script saya -->
 <script src="{{ url_for('static', filename='js/generate.js') }}"></script>
 
 {% include 'footer.html' %}
