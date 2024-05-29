@@ -88,7 +88,7 @@ function displayAlert(responseData) {
       alertIcon = "error"
       alertText = "Wajah terdaftar tetapi tidak tersedia di database"
       break
-    case "successfull":
+    case "successful":
       alertTitle = "Data Berhasil Disimpan!"
       alertIcon = "success"
       alertText = `Wajah anda telah disimpan dengan nim: ${nim}`
@@ -126,7 +126,7 @@ function displayAlert(responseData) {
     default:
       alertTitle = "Error!"
       alertIcon = "error"
-      alertText = "Terjadi kesalahan saat menyimpan data"
+      alertText = message
       break
   }
 

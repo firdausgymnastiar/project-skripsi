@@ -79,9 +79,9 @@ function displayAlert(responseData) {
       alertText = "Terjadi kesalahan dalam mengirim permintaan"
       break
     case "form kosong":
-      alertTitle = "Error!"
+      alertTitle = "Formulir tidak lengkap!"
       alertIcon = "error"
-      alertText = "Form kosong/terjadi kesalahan, mohon ulangi!"
+      alertText = "Mohon isi formulir dengan lengkap!"
       break
     default:
       alertTitle = "Error!"

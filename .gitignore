@@ -3,3 +3,5 @@ static/adminlte/
 static/upload/
 requirements.txt
 LICENSE
+config.py
+.bashrc

@@ -171,7 +171,7 @@ function alertWajah(responseDataWajah) {
   let alertTitle, alertIcon, alertText
 
   switch (message) {
-    case "successfull":
+    case "Successful":
       alertTitle = "Wajah Valid!"
       alertIcon = "success"
       alertText = `Wajah anda terdaftar dengan nim: ${nim}!`
@@ -201,7 +201,7 @@ function alertWajah(responseDataWajah) {
       alertIcon = "error"
       alertText = "Mohon ulangi dengan wajah yang asli!"
       break
-    case "gada didaftar db!":
+    case "Not registered in database":
       alertTitle = "Error!"
       alertIcon = "error"
       alertText = "Wajah terdaftar tetapi tidak tersedia di database"
@@ -211,6 +211,11 @@ function alertWajah(responseDataWajah) {
       alertIcon = "error"
       alertText =
         "Format foto yang diizinkan hanya .jpg/.jpeg/.png . Mohon Ulangi!"
+      break
+    case "Invalid file type":
+      alertTitle = "Format file tidak diizinkan!"
+      alertIcon = "error"
+      alertText = "Format gambar yang diizinkan adalah jpg, jpeg, png"
       break
     default:
       alertTitle = "Error!"
@@ -296,6 +301,11 @@ function alertKelas(responseDataKelas) {
       alertTitle = "Ruang Kelas Tidak Terdeteksi!"
       alertIcon = "error"
       alertText = `${confidence}% yakin gambar yang diinput bukan gambar ruang kelas`
+      break
+    case "Invalid file type":
+      alertTitle = "Format file tidak diizinkan!"
+      alertIcon = "error"
+      alertText = "Format gambar yang diizinkan adalah jpg, jpeg, png"
       break
     case "No file part":
       alertTitle = "File Gambar Tidak Ada!"
@@ -438,10 +448,15 @@ function displayAlert(responseData) {
       alertIcon = "error"
       alertText = "Mohon isi formulir dengan lengkap!"
       break
-    case "successfull":
+    case "Successful":
       alertTitle = "Login Berhasil"
       alertIcon = "success"
       alertText = `Selamat Datang ${name}(NIM: ${nim}) di kelas dengan token: ${token}!`
+      break
+    case "Invalid file type":
+      alertTitle = "Format file tidak diizinkan!"
+      alertIcon = "error"
+      alertText = "Format gambar yang diizinkan adalah jpg, jpeg, png"
       break
     default:
       alertTitle = "Error!"
