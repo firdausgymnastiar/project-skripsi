@@ -64,14 +64,14 @@ def face_processing(img_cv):
         image = cv2.imdecode(img_cv, cv2.IMREAD_COLOR)
         folder_img = "static/upload/img_register"
 
-        img = DeepFace.extract_faces(img_path=image)
+        img = DeepFace.extract_faces(img_path=image, detector_backend = "retinaface",)
         if len(img) > 1:
             return "More than 1 face detected"
         elif len(img) == 1:
             anti_fake = test(image)
             if anti_fake == 1:
                 try:
-                    dfs = DeepFace.find(img_path=image, db_path=folder_img)
+                    dfs = DeepFace.find(img_path=image, db_path=folder_img, model_name = "Facenet512",)
                     # Mengakses DataFrame pada indeks 0 dari list_of_dfs
                     df_at_index_0 = dfs[0]
                     # Temukan nilai minimum dari kolom 'distance' dalam DataFrame pada indeks 0
