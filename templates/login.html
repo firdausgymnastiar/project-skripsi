@@ -60,6 +60,13 @@
                             <button type="button" class="btn btn-success btn-sm mt-2" id="validateKelasBtn"
                                 style="display: none;" disabled>Validate Gambar Kelas</button>
                         </div>
+                        <div id="sectionQR" style="display: block;" class="form-group">
+                            <button id="cameraButton3" style="display: none;" type="button"
+                                class="btn btn-primary btn-sm d-grid gap-2 d-md-block">
+                                Buka Camera
+                            </button>
+                            <div id="reader" style="display: none;"></div>
+                        </div>
                     </div>
                     <div id="sectionSubmit" style="display: block;" class="card-footer">
                         <button type="submit" class="btn btn-success" id="submitButton" style="display: none;" disabled>
@@ -76,5 +83,6 @@
         </div>
     </section>
 </div>
+<script src="{{ url_for ('static', filename='node_modules/html5-qrcode/html5-qrcode.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/login.js') }}"></script>
 {% include 'footer.html' %}

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Scanner</title>
+
+</head>
+
+<body>
+    <button id="open-camera-btn">Buka Kamera</button>
+    <div id="reader" style="display: none;"></div>
+    <script>
+        let currentQRCode = '';
+
+        // Function to fetch current QR code from server
+        function fetchCurrentQRCode() {
+            fetch('/get_qr', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ token: "748407" }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    currentQRCode = data.current_qr_code;
+                    console.log("Fetched current QR code: ", currentQRCode);
+                })
+                .catch(error => console.error('Error fetching current QR code:', error));
+        }
+
+        // Call fetchCurrentQRCode every 15 seconds to ensure we have the latest QR code
+        fetchCurrentQRCode();
+        setInterval(fetchCurrentQRCode, 1000);
+
+        function onScanSuccess(decodedText) {
+            if (decodedText === currentQRCode) {
+                alert("QR code is valid!");
+            } else {
+                alert("QR code expired!");
+            }
+        }
+
+        function startQRScanner() {
+            const html5QrCode = new Html5Qrcode("reader");
+
+            html5QrCode.start(
+                { facingMode: "environment" }, // Use rear camera
+                {
+                    fps: 10,
+                    qrbox: 250
+                },
+                onScanSuccess)
+                .catch(err => {
+                    console.log(`Unable to start scanning, error: ${err}`);
+                });
+        }
+
+        document.getElementById('open-camera-btn').addEventListener('click', function () {
+            document.getElementById('reader').style.display = 'block';
+            startQRScanner();
+        });
+    </script>
+</body>
+
+</html>

@@ -21,7 +21,7 @@ async function goActivate(event) {
     if (response.ok && responseData.status === "valid") {
       validatedToken = token
       generateQRCode()
-      setInterval(generateQRCode, 3000)
+      setInterval(generateQRCode, 5000)
       qr.style.display = "block"
       overlay.style.display = "none"
     } else {

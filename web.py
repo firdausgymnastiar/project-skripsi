@@ -334,6 +334,7 @@ def update_qr():
         response = {'success': False, 'message': str(e)}
         return jsonify(response), 500
     
+
 @app.route('/get_qr', methods=["POST", "GET"])
 def get_qr():
     data = request.get_json()
@@ -347,7 +348,11 @@ def get_qr():
     cur.execute("SELECT qrs FROM data_token WHERE token = %s", (token,))
     current_qr_code = cur.fetchone()
     cur.close()
-    return jsonify({"current_qr_code": current_qr_code[0]})
+    return jsonify({"status": "valid", "success": True, "current_qr_code": current_qr_code[0]})
+
+@app.route('/tes', methods=["POST", "GET"])
+def tes():
+    return render_template('tes.html')
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0')

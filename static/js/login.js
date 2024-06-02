@@ -8,6 +8,7 @@ const preview = document.getElementById("preview")
 const validateWajahBtn = document.getElementById("validateWajahBtn")
 const gambarKelas = document.getElementById("gambarKelas")
 const cameraButton2 = document.getElementById("cameraButton2")
+const cameraButton3 = document.getElementById("cameraButton3")
 const ulangiCamera2 = document.getElementById("ulangiCamera2")
 const preview2 = document.getElementById("preview2")
 const validateKelasBtn = document.getElementById("validateKelasBtn")
@@ -16,13 +17,20 @@ const overlay = document.getElementById("overlay")
 const sectionWajah = document.getElementById("sectionWajah")
 const sectionKelas = document.getElementById("sectionKelas")
 const sectionSubmit = document.getElementById("sectionSubmit")
+const reader = document.getElementById("reader")
 
 let isTokenValidated = false
 let isWajahValidated = false
 let isKelasValidated = false
+let isQRValidated = false
 
 function checkFormValidity() {
-  if (isTokenValidated && isWajahValidated && isKelasValidated) {
+  if (
+    isTokenValidated &&
+    isWajahValidated &&
+    isKelasValidated &&
+    isQRValidated
+  ) {
     submitButton.style.display = "block"
     submitButton.disabled = false
   } else {
@@ -238,7 +246,7 @@ async function validateKelas() {
     alertKelas(responseDataKelas)
     validatedKelasFile = file
     isKelasValidated = true
-    // sectionSubmit.style.display = "block"
+    cameraButton3.style.display = "block"
     tokenInput.disabled = true
     validateTokenBtn.disabled = true
     cameraButton.disabled = true
@@ -307,6 +315,75 @@ function alertKelas(responseDataKelas) {
   })
 }
 
+let currentQRCode = null
+let qrScannerRunning = false
+let html5QrCode = null
+function fetchCurrentQRCode() {
+  fetch("/get_qr", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ token: validatedToken }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      currentQRCode = data.current_qr_code
+      console.log("Fetched current QR code: ", currentQRCode)
+    })
+    .catch((error) => console.error("Error fetching current QR code:", error))
+}
+function startQRScanner() {
+  if (qrScannerRunning) return
+
+  html5QrCode = new Html5Qrcode("reader")
+
+  html5QrCode
+    .start(
+      { facingMode: "environment" }, // Use rear camera
+      {
+        fps: 10,
+        qrbox: 250,
+      },
+      onScanSuccess
+    )
+    .catch((err) => {
+      console.log(`Unable to start scanning, error: ${err}`)
+    })
+  qrScannerRunning = true
+}
+function onScanSuccess(decodedText) {
+  if (decodedText === currentQRCode) {
+    // Stop the scanner
+    html5QrCode
+      .stop()
+      .then(() => {
+        console.log("QR Code scanning stopped.")
+        isQRValidated = true
+        reader.style.display = "none"
+        cameraButton3.style.display = "none"
+        cameraButton3.disabled = true
+        qrScannerRunning = false
+        alert("QR code valid!")
+        checkFormValidity()
+      })
+      .catch((err) => {
+        console.log(`Unable to stop scanning, error: ${err}`)
+      })
+  } else {
+    alert("QR code expired!")
+  }
+  checkFormValidity()
+}
+function qrScanner() {
+  reader.style.display = "block"
+
+  // Call fetchCurrentQRCode every 15 seconds to ensure we have the latest QR code
+  fetchCurrentQRCode()
+  setInterval(fetchCurrentQRCode, 1000)
+  startQRScanner()
+}
+cameraButton3.addEventListener("click", qrScanner)
 validateTokenBtn.addEventListener("click", validateToken)
 validateWajahBtn.addEventListener("click", validateWajah)
 validateKelasBtn.addEventListener("click", validateKelas)
@@ -363,6 +440,7 @@ async function simpanData(event) {
   console.log("Wajah:", validatedWajahFile)
   console.log("NIM:", validatedNIM)
   console.log("Kelas:", validatedKelasFile)
+  console.log("qr:", isQRValidated)
 
   token = validatedToken
   wajah = validatedWajahFile
