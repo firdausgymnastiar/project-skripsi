@@ -23,6 +23,7 @@ let isKelasValidated = false
 
 function checkFormValidity() {
   if (isTokenValidated && isWajahValidated && isKelasValidated) {
+    submitButton.style.display = "block"
     submitButton.disabled = false
   } else {
     submitButton.disabled = true
@@ -46,10 +47,11 @@ async function validateToken() {
     alertToken(responseDataToken)
     validatedToken = token
     isTokenValidated = true
-    sectionWajah.style.display = "block"
+    // sectionWajah.style.display = "block"
     tokenInput.disabled = true
     validateTokenBtn.disabled = true
     cameraButton.disabled = false
+    cameraButton.style.display = "block"
     ulangiCamera.disabled = false
     validateWajahBtn.disabled = false
     cameraButton2.disabled = true
@@ -62,6 +64,7 @@ async function validateToken() {
     ulangiCamera.disabled = true
     validateWajahBtn.disabled = true
     cameraButton2.disabled = true
+    cameraButton2.style.display = "none"
     ulangiCamera2.disabled = true
     validateKelasBtn.disabled = true
   }
@@ -128,10 +131,11 @@ async function validateWajah() {
     validatedWajahFile = file
     validatedNIM = responseDataWajah.nim
     isWajahValidated = true
-    sectionKelas.style.display = "block"
+    // sectionKelas.style.display = "block"
     tokenInput.disabled = true
     validateTokenBtn.disabled = true
     cameraButton.disabled = true
+    cameraButton2.style.display = "block"
     ulangiCamera.disabled = true
     validateWajahBtn.disabled = true
     cameraButton2.disabled = false
@@ -234,7 +238,7 @@ async function validateKelas() {
     alertKelas(responseDataKelas)
     validatedKelasFile = file
     isKelasValidated = true
-    sectionSubmit.style.display = "block"
+    // sectionSubmit.style.display = "block"
     tokenInput.disabled = true
     validateTokenBtn.disabled = true
     cameraButton.disabled = true

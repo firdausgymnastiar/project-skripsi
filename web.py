@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, url_for
 from flask_mysqldb import MySQL
 from werkzeug.utils import secure_filename
 import os
@@ -260,9 +260,10 @@ def generatetoken():
     tanggal = request.form.get('tanggal')
     waktu = request.form.get('waktu')
     deskripsi = request.form.get('deskripsi')
+    password = request.form.get('password')
     token = request.form.get('token')
     
-    if not all([email, nama, inisial, nip, matkul, pertemuan, tanggal, waktu, deskripsi, token]):
+    if not all([email, nama, inisial, nip, matkul, pertemuan, tanggal, waktu, deskripsi, password, token]):
         return jsonify({'success': False, 'message': 'form kosong'}), 400 
 
     try:
@@ -275,7 +276,7 @@ def generatetoken():
         else:
             try:
                 cur = mysql.connection.cursor()
-                cur.execute("INSERT INTO data_token(email,name,initial,nip,subject,meeting,date,time,description,token) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (email,nama,inisial,nip,matkul,pertemuan,tanggal,waktu,deskripsi,token))
+                cur.execute("INSERT INTO data_token(email,name,initial,nip,subject,meeting,date,time,description,password,token) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (email,nama,inisial,nip,matkul,pertemuan,tanggal,waktu,deskripsi,password,token))
                 mysql.connection.commit()
                 cur.close()
                 return jsonify({'success': True, 'message': 'successfull', 'token': token})
@@ -283,6 +284,70 @@ def generatetoken():
                 return jsonify({'success': False, 'message': str(e)}), 500  
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/activate')
+def activate():
+    return render_template('activate.html',menu='activate')
+@app.route('/activateQR', methods=["POST", "GET"])
+def activateQR():
+    password = request.form.get('password')
+    token = request.form.get('token')
+
+    if not all([token,password]):
+        return jsonify({'success': False, 'message': 'tidak lengkap'}), 400
+    
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM data_token WHERE token = %s AND password = %s", (token, password))
+        data = cur.fetchall()
+        cur.close()
+        
+        if data:
+            return jsonify({'success': True, 'status': "valid", 'message': 'successfull', 'token': token})
+        else:
+            return jsonify({'success': False, 'message': 'Invalid token or password'}), 403
+    except Exception as e:
+        response = {'success': False, 'message': str(e)}
+        return jsonify(response), 500
+
+@app.route('/update_qr', methods=['POST', 'GET'])
+def update_qr():
+    data = request.get_json()
+    
+    if not data or 'qr_code' not in data or 'token' not in data:
+        return jsonify({"status": "error", "message": "Invalid data"}), 400
+
+    current_qr_code = data['qr_code']
+    token = data['token']
+
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            UPDATE data_token
+            SET qrs = %s
+            WHERE token = %s
+        """, (current_qr_code, token))
+        mysql.connection.commit()
+        cur.close()
+        return jsonify({"status": "success"})
+    except Exception as e:
+        response = {'success': False, 'message': str(e)}
+        return jsonify(response), 500
+    
+@app.route('/get_qr', methods=["POST", "GET"])
+def get_qr():
+    data = request.get_json()
+    
+    if not data or 'token' not in data:
+        return jsonify({"status": "error", "message": "Invalid data"}), 400
+
+    token = data['token']
+
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT qrs FROM data_token WHERE token = %s", (token,))
+    current_qr_code = cur.fetchone()
+    cur.close()
+    return jsonify({"current_qr_code": current_qr_code[0]})
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0')
