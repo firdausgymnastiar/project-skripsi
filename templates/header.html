@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>AdminLTE 3 | Dashboard</title>
+    <title>SIPREMAN (SISTEM PRESENSI MANDIRI)</title>
 
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet"
@@ -38,7 +38,9 @@
                         <i class="nav-link fas fa-bars"></i>
                     </div>
                     <div class="col-11 pl-3">
-                        <h5><b>SISTEM PRESENSI MANDIRI (SIPREMAN)</b></h5>
+                        <h5><b>SISTEM PRESENSI MANDIRI (SIPREMAN)</b> </h5>
+                        <!-- <img src="{{ url_for ('static', filename='adminlte/dist/img/SIPREMANLogo.png') }}"
+                            alt="AdminLTE Logo" width="200" height="100"> -->
                     </div>
                 </div>
 
@@ -48,7 +50,7 @@
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
         <a href="/" class="brand-link">
             <img src="{{ url_for ('static', filename='adminlte/dist/img/SIPREMANLogo.png') }}" alt="AdminLTE Logo"
-                class="brand-image img-circle elevation-3" style="opacity: .8">
+                class="brand-image img-circle elevation-3">
             <span class="brand-text font-weight-light">SIPREMAN</span>
         </a>
         <div class="sidebar">
@@ -94,7 +96,7 @@
                             class="nav-link {% if menu=='activate' %} active {% endif %}">
                             <i class="nav-icon fas fa-solid fa-power-off"></i>
                             <p>
-                                Aktifkan Kelas
+                                Aktivasi Kelas
                             </p>
                         </a>
                     </li>

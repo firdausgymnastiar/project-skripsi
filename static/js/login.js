@@ -12,6 +12,7 @@ const cameraButton3 = document.getElementById("cameraButton3")
 const ulangiCamera2 = document.getElementById("ulangiCamera2")
 const preview2 = document.getElementById("preview2")
 const validateKelasBtn = document.getElementById("validateKelasBtn")
+const validateQRBtn = document.getElementById("validateQRBtn")
 const submitButton = document.getElementById("submitButton")
 const overlay = document.getElementById("overlay")
 const sectionWajah = document.getElementById("sectionWajah")
@@ -280,7 +281,7 @@ function alertKelas(responseDataKelas) {
     case "Classroom":
       alertTitle = "Ruang Kelas Terdeteksi!"
       alertIcon = "success"
-      alertText = `Anda terdeteksi di ruang kelas, silahkan submit untuk kehadiran anda!`
+      alertText = `Anda terdeteksi di ruang kelas, silahkan scan QR Kelas!`
       break
     case "Not A Classroom":
       alertTitle = "Ruang Kelas Tidak Terdeteksi!"
@@ -352,29 +353,67 @@ function startQRScanner() {
     })
   qrScannerRunning = true
 }
+function stopQRScanner() {
+  // Stop the scanner
+  html5QrCode
+    .stop()
+    .then(() => {
+      console.log("QR Code scanning stopped.")
+      qrScannerRunning = false
+    })
+    .catch((err) => {
+      console.log(`Unable to stop scanning, error: ${err}`)
+    })
+}
 function onScanSuccess(decodedText) {
   if (decodedText === currentQRCode) {
-    // Stop the scanner
-    html5QrCode
-      .stop()
-      .then(() => {
-        console.log("QR Code scanning stopped.")
-        isQRValidated = true
-        reader.style.display = "none"
-        cameraButton3.style.display = "none"
-        cameraButton3.disabled = true
-        qrScannerRunning = false
-        alert("QR code valid!")
-        checkFormValidity()
-      })
-      .catch((err) => {
-        console.log(`Unable to stop scanning, error: ${err}`)
-      })
+    QRAlert("QR code is valid!")
+    isQRValidated = true
+    reader.style.display = "none"
+    cameraButton3.style.display = "none"
+    validateQRBtn.style.display = "block"
+    cameraButton3.disabled = true
   } else {
-    alert("QR code expired!")
+    QRAlert("QR code expired!")
+    startQRScanner()
   }
   checkFormValidity()
 }
+function QRAlert(message) {
+  let alertTitle, alertIcon, alertText
+
+  switch (message) {
+    case "QR code expired!":
+      alertTitle = "QR Code yang anda scan sudah expired/tidak valid!"
+      alertIcon = "error"
+      alertText = `Mohon scan kembali!`
+      break
+    case "QR code is valid!":
+      alertTitle = "QR Code Valid!"
+      alertIcon = "success"
+      alertText = `silahkan submit untuk kehadiran anda!`
+      break
+    default:
+      alertTitle = "Error!"
+      alertIcon = "error"
+      alertText = message
+      break
+  }
+  Swal.fire({
+    icon: alertIcon,
+    title: alertTitle,
+    text: alertText,
+    allowOutsideClick: false,
+    didRender: () => {
+      stopQRScanner()
+    },
+  }).then((result) => {
+    if (result.isConfirmed) {
+      overlay.style.display = "none"
+    }
+  })
+}
+
 function qrScanner() {
   reader.style.display = "block"
 
