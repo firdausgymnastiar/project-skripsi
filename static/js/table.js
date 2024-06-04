@@ -9,6 +9,8 @@ function createDescriptionElement(tag, text) {
   return element
 }
 
+let mataKuliah = ""
+let pertemuan = ""
 function generateDescription(responseDataKelas) {
   const descriptionList = document.querySelector("#data-list")
   descriptionList.innerHTML = ""
@@ -23,6 +25,10 @@ function generateDescription(responseDataKelas) {
       ["JAM", item[8]],
       ["DESKRIPSI KELAS", item[9]],
     ]
+
+    // Simpan nilai MATA KULIAH dan PERTEMUAN untuk nama file
+    mataKuliah = item[6]
+    pertemuan = `KE-${item[6]}`
 
     dataPairs.forEach(([dtText, ddText]) => {
       descriptionList.appendChild(createDescriptionElement("dt", dtText))
@@ -52,7 +58,7 @@ function generateTable(responseDataKelas) {
       item[1]
     }" width="100" height="100"></td>
       <td>${item[6]}</td>
-      <td>hadir cuy</td>
+      <td>Hadir</td>
     `
     tableBody.appendChild(row)
   })
@@ -127,3 +133,25 @@ function alertTable(responseDataKelas) {
 }
 
 goBtn.addEventListener("click", goDetail)
+
+function exportTableToExcel() {
+  let table = document.getElementById("data-table")
+  let tableClone = table.cloneNode(true)
+  filename = `MATA-KULIAH-${mataKuliah}-PERTEMUAN-${pertemuan}.xlsx`
+
+  // Remove unwanted columns (1 and 3)
+  let columnsToKeep = [0, 1, 2, 5, 6, 7]
+  let rows = tableClone.querySelectorAll("tr")
+  rows.forEach((row) => {
+    let cells = row.querySelectorAll("th, td")
+    for (let i = cells.length - 1; i >= 0; i--) {
+      if (!columnsToKeep.includes(i)) {
+        row.removeChild(cells[i])
+      }
+    }
+  })
+
+  let wb = XLSX.utils.table_to_book(tableClone, { sheet: "Sheet1" })
+
+  XLSX.writeFile(wb, filename)
+}

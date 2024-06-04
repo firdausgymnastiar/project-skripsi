@@ -44,9 +44,12 @@
                             <div class="card">
                                 <div class="card-header">
                                     <h3 class="card-title"><b>Tabel Kehadiran</b></h3>
+                                    <br>
+                                    <button onclick="exportTableToExcel()" class="btn btn-success"><i
+                                            class="fas fa-edit"></i> Export to excell</button>
                                 </div>
                                 <div class="card-body table-responsive p-0">
-                                    <table class="table" id="data-table">
+                                    <table class="table table-bordered table-striped" id="data-table">
                                         <thead>
                                             <tr>
                                                 <th style="width: 10px">No</th>
@@ -76,5 +79,8 @@
         </div>
     </section>
 </div>
+
+<script src="{{ url_for('static', filename='js/xlsx.full.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/table.js') }}"></script>
+
 {% include 'footer.html' %}
