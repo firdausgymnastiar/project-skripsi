@@ -419,7 +419,7 @@ function qrScanner() {
 
   // Call fetchCurrentQRCode every 15 seconds to ensure we have the latest QR code
   fetchCurrentQRCode()
-  setInterval(fetchCurrentQRCode, 1000)
+  setInterval(fetchCurrentQRCode, 2000)
   startQRScanner()
 }
 cameraButton3.addEventListener("click", qrScanner)

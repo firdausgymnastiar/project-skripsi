@@ -1,8 +1,12 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for
+
 from flask_mysqldb import MySQL
 from werkzeug.utils import secure_filename
 import os
 import numpy as np
+import bcrypt
+import time
+import logging
 
 from ai import face_processing, class_processing
 from config import Config
@@ -11,6 +15,25 @@ app = Flask(__name__)
 app.config.from_object(Config)
 
 mysql = MySQL(app)
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# List of routes to monitor
+monitored_routes = ['/validate_image_wajah', '/validate_image_kelas', '/registerwajah', '/loginkelas']
+
+@app.before_request
+def before_request():
+    request.start_time = time.time()
+
+@app.after_request
+def after_request(response):
+    # Check if the route is in the list of monitored routes
+    if request.path in monitored_routes:
+        elapsed_time = time.time() - request.start_time
+        logger.info(f"Time taken for {request.path}: {elapsed_time:.4f} seconds")
+    return response
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
@@ -275,8 +298,9 @@ def generatetoken():
             return jsonify({'success': False, 'message': 'token is existing'}), 400
         else:
             try:
+                hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
                 cur = mysql.connection.cursor()
-                cur.execute("INSERT INTO data_token(email,name,initial,nip,subject,meeting,date,time,description,password,token) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (email,nama,inisial,nip,matkul,pertemuan,tanggal,waktu,deskripsi,password,token))
+                cur.execute("INSERT INTO data_token(email,name,initial,nip,subject,meeting,date,time,description,password,token) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (email,nama,inisial,nip,matkul,pertemuan,tanggal,waktu,deskripsi,hashed_password,token))
                 mysql.connection.commit()
                 cur.close()
                 return jsonify({'success': True, 'message': 'successfull', 'token': token})
@@ -298,14 +322,19 @@ def activateQR():
     
     try:
         cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM data_token WHERE token = %s AND password = %s", (token, password))
-        data = cur.fetchall()
+        cur.execute("SELECT password FROM data_token WHERE token = %s ", (token,))
+        data = cur.fetchone()
         cur.close()
         
         if data:
-            return jsonify({'success': True, 'status': "valid", 'message': 'successfull', 'token': token})
+            stored_password = data[0]
+            if bcrypt.checkpw(password.encode('utf-8'), stored_password.encode('utf-8')):
+                return jsonify({'success': True, 'status': "valid", 'message': 'successfull', 'token': token})
+            else:
+                return jsonify({'success': False, 'message': 'Invalid token or password'}), 403
         else:
-            return jsonify({'success': False, 'message': 'Invalid token or password'}), 403
+            return jsonify({'success': False, 'message': 'Invalid token'}), 403
+            
     except Exception as e:
         response = {'success': False, 'message': str(e)}
         return jsonify(response), 500

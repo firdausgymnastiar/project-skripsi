@@ -17,7 +17,7 @@ function generateDescription(responseDataKelas) {
 
   responseDataKelas.dataKelas.forEach((item) => {
     const dataPairs = [
-      ["Token", item[10]],
+      ["Token", item[11]],
       ["MATA KULIAH", item[6]],
       ["NAMA DOSEN", item[2]],
       ["PERTEMUAN", `KE-${item[6]}`],

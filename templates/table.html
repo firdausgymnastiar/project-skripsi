@@ -29,41 +29,48 @@
                     </div>
                     <div style="display: none;" id="detail">
                         <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">
-                                    <i class="fas fa-text-width"></i>
-                                    Detail Kelas
-                                </h3>
-                            </div>
                             <div class="card-body">
-                                <dl id="data-list">
-                                </dl>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h3 class="card-title"><b>Tabel Kehadiran</b></h3>
-                                    <br>
-                                    <button onclick="exportTableToExcel()" class="btn btn-success"><i
-                                            class="fas fa-edit"></i> Export to excell</button>
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h3 class="card-title">
+                                            <i class="fas fa-text-width"></i>
+                                            Detail Kelas
+                                        </h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <dl id="data-list">
+                                        </dl>
+                                    </div>
                                 </div>
-                                <div class="card-body table-responsive p-0">
-                                    <table class="table table-bordered table-striped" id="data-table">
-                                        <thead>
-                                            <tr>
-                                                <th style="width: 10px">No</th>
-                                                <th>NIM</th>
-                                                <th>Nama Lengkap</th>
-                                                <th>Verifikasi Wajah</th>
-                                                <th>Verifikasi Ruang Kelas</th>
-                                                <th>Waktu Masuk</th>
-                                                <th style="width: 40px">Keterangan</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                        </tbody>
-                                    </table>
+
+                                <div class="card">
+                                    <div class="card-header ">
+                                        <div class="d-flex justify-content-between">
+                                            <h3 class="card-title">
+                                                <b>Tabel Kehadiran</b>
+                                            </h3>
+                                            <button onclick="exportTableToExcel()" class="btn btn-sm btn-success">
+                                                <i class="fas fa-solid fa-file-export"></i> Export to excell
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body table-responsive p-0">
+                                        <table class="table table-bordered table-striped" id="data-table">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width: 10px">No</th>
+                                                    <th>NIM</th>
+                                                    <th>Nama Lengkap</th>
+                                                    <th>Verifikasi Wajah</th>
+                                                    <th>Verifikasi Ruang Kelas</th>
+                                                    <th>Waktu Masuk</th>
+                                                    <th style="width: 40px">Keterangan</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>

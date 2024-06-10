@@ -2,6 +2,7 @@ const qr = document.getElementById("qr")
 // const goBtn = document.getElementById("goBtn")
 const tokenInput = document.getElementById("token")
 const overlay = document.getElementById("overlay")
+const text = document.getElementById("text")
 const formActivate = document.getElementById("formActivate")
 
 let validatedToken = null
@@ -20,6 +21,7 @@ async function goActivate(event) {
 
     if (response.ok && responseData.status === "valid") {
       validatedToken = token
+      text.innerHTML = `SCAN QR INI UNTUK AKSES PRESENSI! TOKEN: ${token}`
       generateQRCode()
       setInterval(generateQRCode, 5000)
       qr.style.display = "block"
@@ -48,6 +50,12 @@ async function goActivate(event) {
         alertTitle = "Token atau password anda salah!"
         alertIcon = "error"
         alertText = "Mohon isi formulir dengan benar!"
+        alertConfirm = true
+        break
+      case "Invalid token":
+        alertTitle = "Token tidak ditemukan!"
+        alertIcon = "error"
+        alertText = "Mohon generate token terlebih dahulu!"
         alertConfirm = true
         break
       default:
